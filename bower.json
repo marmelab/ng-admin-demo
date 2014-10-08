@@ -1,0 +1,6 @@
+{
+    "name": "ng-admin demo",
+    "dependencies": {
+        "ng-admin": "~0.2.2"
+    }
+}
