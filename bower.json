@@ -1,6 +1,9 @@
 {
-    "name": "ng-admin demo",
-    "dependencies": {
-        "ng-admin": "~0.2.2"
-    }
+  "name": "ng-admin demo",
+  "dependencies": {
+    "ng-admin": "0.3"
+  },
+  "resolutions": {
+    "angular": "~1.3.1"
+  }
 }
