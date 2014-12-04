@@ -48,10 +48,10 @@
         var post = new Entity('posts'); // the API endpoint for posts will be http://localhost:3000/posts/:id
 
         var comment = new Entity('comments')
-            .identifier(new Field('id')) // you can optionally customize the identifier used in the api ('id' by default)
-            .addMappedField(new Field('post_id')); // a field to be read from the API, even if not displayed in any view (used later in template field)
+            .identifier(new Field('id')); // you can optionally customize the identifier used in the api ('id' by default)
 
-        var tag = new Entity('tags');
+        var tag = new Entity('tags')
+            .readOnly(); // a readOnly entity has disabled creation, edition, and deletion views
 
         // set the application entities
         app
@@ -69,30 +69,27 @@
             .order(1) // display the post panel first in the dashboard
             .limit(5) // limit the panel to the 5 latest posts
             .pagination(pagination) // use the custom pagination function to format the API request correctly
-            .addField(new Field('title').isEditLink(true).map(truncate));
+            .addField(new Field('title').isDetailLink(true).map(truncate));
 
         post.listView()
-            .title('All posts') // default title is "List of posts"
+            .title('All posts') // default title is "List of [entity_name]s"
             .pagination(pagination)
             .addField(new Field('id').label('ID'))
             .addField(new Field('title')) // the default list field type is "string", and displays as a string
             .addField(new ReferenceMany('tags') // a Reference is a particular type of field that references another entity
                 .targetEntity(tag) // the tag entity is defined later in this file
                 .targetField(new Field('name')) // the field to be displayed in this list
-            );
+        )
+            .listActions(['show', 'edit', 'delete']);
 
-        post.creationView()
-            .title('Add a new post') // default title is "Create a post"
-            .addField(new Field('title')) // the default edit field type is "string", and displays as a text input
-            .addField(new Field('body').type('wysiwyg')) // overriding the type allows rich text editing for the body
-
-        post.editionView()
+        post.showView() // a showView displays one entry in full page - allows to display more data than in a a list
+            .addField(new Field('id'))
             .addField(new Field('title'))
             .addField(new Field('body').type('wysiwyg'))
             .addField(new ReferenceMany('tags')
                 .targetEntity(tag)
                 .targetField(new Field('name'))
-            )
+        )
             .addField(new ReferencedList('comments')
                 .targetEntity(comment)
                 .targetReferenceField('post_id')
@@ -100,7 +97,29 @@
                     new Field('id'),
                     new Field('body').label('Comment')
                 ])
-            );
+        );
+
+        post.creationView()
+            .addField(new Field('title')) // the default edit field type is "string", and displays as a text input
+            .addField(new Field('body').type('wysiwyg')) // overriding the type allows rich text editing for the body
+
+        post.editionView()
+            .title('Edit post "{{ entry.values.title }}"') // title() accepts a template string, which has access to the entry
+            .actions(['list', 'show', 'delete']) // choose which buttons appear in the action bar
+            .addField(new Field('title'))
+            .addField(new Field('body').type('wysiwyg'))
+            .addField(new ReferenceMany('tags')
+                .targetEntity(tag)
+                .targetField(new Field('name'))
+        )
+            .addField(new ReferencedList('comments')
+                .targetEntity(comment)
+                .targetReferenceField('post_id')
+                .targetFields([
+                    new Field('id'),
+                    new Field('body').label('Comment')
+                ])
+        );
 
         // comment.menuView()
         //     .order(2); // comment should be the second item in the sidebar menu
@@ -118,7 +137,7 @@
                 .template(function () { // template() can take a function or a string
                     return '<custom-post-link></custom-post-link>'; // you can use custom directives, too
                 })
-            );
+        );
 
         comment.listView()
             .title('Comments')
@@ -130,7 +149,7 @@
                 .map(truncate)
                 .targetEntity(post)
                 .targetField(new Field('title'))
-            )
+        )
             .addField(new Field('body').map(truncate))
             .addField(new Field('created_at').label('Creation date').type('date'))
             .addQuickFilter('Today', function () { // a quick filter displays a button to filter the list based on a set of query parameters passed to the API
@@ -151,8 +170,13 @@
                 .map(truncate)
                 .targetEntity(post)
                 .targetField(new Field('title'))
-            )
-            .addField(new Field('body').type('wysiwyg'));
+        )
+            .addField(new Field('body').type('wysiwyg'))
+            .addField(new Field('created_at')
+                .label('Creation date')
+                .type('date') // to edit a date type field, ng-admin offers a datepicker
+                .defaultValue(new Date()) // preset fields in creation view with defaultValue
+        );
 
         comment.editionView()
             .addField(new Reference('post_id')
@@ -160,14 +184,14 @@
                 .map(truncate)
                 .targetEntity(post)
                 .targetField(new Field('title'))
-            )
+        )
             .addField(new Field('body').type('wysiwyg'))
             .addField(new Field('created_at').label('Creation date').type('date'))
             .addField(new Field()
                 .type('template')
                 .label('Actions')
                 .template('<custom-post-link></custom-post-link>') // template() can take a function or a string
-            );
+        );
 
         comment.deletionView()
             .title('Deletion confirmation'); // customize the deletion confirmation message
@@ -197,20 +221,11 @@
                 .template(function () {
                     return '{{ entry.values.name.toUpperCase() }}';
                 })
-            );
+        )
+            .listActions(['show']);
 
-        tag.creationView()
-            .addField(new Field('name')
-                .type('string')
-                .validation({
-                    "required": true,
-                    "max-length" : 150
-                })
-            )
-            .addField(new Field('published').type('boolean'));
-
-        tag.editionView()
-            .addField(new Field('name').editable(false))
+        tag.showView()
+            .addField(new Field('name'))
             .addField(new Field('published').type('boolean'));
 
         NgAdminConfigurationProvider.configure(app);
