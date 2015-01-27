@@ -90,13 +90,13 @@
         });
 
         var app = new Application('ng-admin backend demo') // application main title
-            .baseApiUrl('http://ng-admin.marmelab.com:8080/'); // main API endpoint
+            .baseApiUrl('http://ng-admin.marmelab.com:8000/'); // main API endpoint
 
         // define all entities at the top to allow references between them
         var post = new Entity('posts'); // the API endpoint for posts will be http://localhost:3000/posts/:id
 
         var comment = new Entity('comments')
-            .baseApiUrl('http://ng-admin.marmelab.com:8080/') // The base API endpoint can be customized by entity
+            .baseApiUrl('http://ng-admin.marmelab.com:8000/') // The base API endpoint can be customized by entity
             .identifier(new Field('id')); // you can optionally customize the identifier used in the api ('id' by default)
 
         var tag = new Entity('tags')
