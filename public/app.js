@@ -4,12 +4,6 @@
 
     var app = angular.module('myApp', ['ng-admin']);
 
-    app.controller('main', function ($scope, $rootScope, $location) {
-        $rootScope.$on('$stateChangeSuccess', function () {
-            $scope.displayBanner = $location.$$path === '/dashboard';
-        });
-    });
-
     app.directive('customPostLink', ['$location', function ($location) {
         return {
             restrict: 'E',
@@ -76,7 +70,9 @@
                 // custom sort params
                 if (params._sortField) {
                     params._sort = params._sortField;
+                    params._order = params._sortDir;
                     delete params._sortField;
+                    delete params._sortDir;
                 }
                 // custom filters
                 if (params._filters) {
@@ -90,13 +86,13 @@
         });
 
         var app = new Application('ng-admin backend demo') // application main title
-            .baseApiUrl('http://ng-admin.marmelab.com:8000/'); // main API endpoint
+            .baseApiUrl('http://localhost:3000/'); // main API endpoint
 
         // define all entities at the top to allow references between them
         var post = new Entity('posts'); // the API endpoint for posts will be http://localhost:3000/posts/:id
 
         var comment = new Entity('comments')
-            .baseApiUrl('http://ng-admin.marmelab.com:8000/') // The base API endpoint can be customized by entity
+            .baseApiUrl('http://localhost:3000/') // The base API endpoint can be customized by entity
             .identifier(new Field('id')); // you can optionally customize the identifier used in the api ('id' by default)
 
         var tag = new Entity('tags')
@@ -153,6 +149,8 @@
                     .targetEntity(tag)
                     .targetField(new Field('name'))
                     .cssClasses('col-sm-4'), // customize look and feel through CSS classes
+                new Field('pictures')
+                    .type('json'),
                 new Field('views')
                     .type('number')
                     .cssClasses('col-sm-4'),
