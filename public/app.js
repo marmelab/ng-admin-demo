@@ -24,20 +24,6 @@
         };
     }]);
 
-    app.directive('customPostLink', ['$location', function ($location) {
-        return {
-            restrict: 'E',
-            template: '<p class="form-control-static"><a ng-click="displayPost(entry)">View&nbsp;post</a></p>',
-            link: function ($scope) {
-                $scope.displayPost = function (entry) {
-                    var postId = entry.values.post_id;
-
-                    $location.path('/edit/posts/' + postId);
-                };
-            }
-        };
-    }]);
-
     app.directive('otherPageLink', ['$location', function ($location) {
         return {
             restrict: 'E',
