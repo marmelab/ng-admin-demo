@@ -45,7 +45,7 @@
         };
     });
 
-    app.config(function (NgAdminConfigurationProvider, Application, Entity, Field, Reference, ReferencedList, ReferenceMany, RestangularProvider, $stateProvider) {
+    app.config(function (NgAdminConfigurationProvider, RestangularProvider, $stateProvider) {
 
         var nga = NgAdminConfigurationProvider;
         // Create a new route for a custom page
