@@ -10,53 +10,8 @@
         });
     });
 
-    app.directive('customPostLink', ['$location', function ($location) {
-        return {
-            restrict: 'E',
-            template: '<p class="form-control-static"><a ng-click="displayPost(entry)">View&nbsp;post</a></p>',
-            link: function ($scope) {
-                $scope.displayPost = function (entry) {
-                    var postId = entry.values.post_id;
-
-                    $location.path('/edit/posts/' + postId);
-                };
-            }
-        };
-    }]);
-
-    app.directive('otherPageLink', ['$location', function ($location) {
-        return {
-            restrict: 'E',
-            scope: true,
-            template: '<p class="form-control-static"><a ng-click="changePage()">Change page</a></p>',
-            link: function ($scope) {
-                $scope.changePage = function () {
-                    $location.path('/new-page');
-                };
-            }
-        };
-    }]);
-
-    app.controller('NewPageController', function ($scope, $location) {
-        $scope.title = 'Custom page';
-
-        $scope.goToDashboard = function () {
-            $location.path('dashboard');
-        };
-    });
-
-    app.config(function (NgAdminConfigurationProvider, RestangularProvider, $stateProvider) {
-
+    app.config(function (NgAdminConfigurationProvider, RestangularProvider) {
         var nga = NgAdminConfigurationProvider;
-        // Create a new route for a custom page
-        $stateProvider
-            .state('new-page', {
-                parent: 'main',
-                url: '/new-page',
-                controller: 'NewPageController',
-                controllerAs: 'listController',
-                template: '<h1>{{ title }}</h1><a ng-click="goToDashboard()">Go to dashboard</a>'
-            });
 
         function truncate(value) {
             if (!value) {
@@ -73,9 +28,9 @@
                 if (params._page) {
                     params._start = (params._page - 1) * params._perPage;
                     params._end = params._page * params._perPage;
-                    delete params._page;
-                    delete params._perPage;
                 }
+                delete params._page;
+                delete params._perPage;
                 // custom sort params
                 if (params._sortField) {
                     params._sort = params._sortField;
@@ -92,7 +47,7 @@
             return { params: params };
         });
 
-        var app = nga.application('ng-admin backend demo') // application main title
+        var admin = nga.application('ng-admin backend demo') // application main title
             .baseApiUrl('http://ng-admin.marmelab.com:8000/'); // main API endpoint
 
         // define all entities at the top to allow references between them
@@ -106,20 +61,17 @@
             .readOnly(); // a readOnly entity has disabled creation, edition, and deletion views
 
         // set the application entities
-        app
+        admin
             .addEntity(post)
             .addEntity(tag)
             .addEntity(comment);
 
         // customize entities and views
 
-        post.menuView()
-            .icon('<span class="glyphicon glyphicon-file"></span>'); // customize the entity menu icon
-
         post.dashboardView() // customize the dashboard panel for this entity
             .title('Recent posts')
             .order(1) // display the post panel first in the dashboard
-            .limit(5) // limit the panel to the 5 latest posts
+            .perPage(5) // limit the panel to the 5 latest posts
             .fields([nga.field('title').isDetailLink(true).map(truncate)]); // fields() called with arguments add fields to the view
 
         post.listView()
@@ -165,7 +117,9 @@
                     .targetFields([
                         nga.field('id'),
                         nga.field('body').label('Comment')
-                    ])
+                    ]),
+                nga.field('', 'template').label('')
+                    .template('<span class="pull-right"><ma-filtered-list-button entity-name="comments" filter="{ post_id: entry.values.id }" size="sm"></ma-filtered-list-button></span>')
             ]);
 
         post.showView() // a showView displays one entry in full page - allows to display more data than in a a list
@@ -173,23 +127,23 @@
                 nga.field('id'),
                 post.editionView().fields(), // reuse fields from another view in another order
                 nga.field('custom_action', 'template')
-                    .template('<other-page-link></other-link-link>')
+                    .label('')
+                    .template('<send-email post="entry"></send-email>')
             ]);
-
-        comment.menuView()
-            .order(2) // set the menu position in the sidebar
-            .icon('<strong style="font-size:1.3em;line-height:1em">✉</strong>'); // you can even use utf-8 symbols!
 
         comment.dashboardView()
             .title('Last comments')
             .order(2) // display the comment panel second in the dashboard
-            .limit(5)
+            .perPage(5)
             .fields([
                 nga.field('id'),
-                nga.field('body').label('Comment').map(truncate),
-                nga.field('', 'template') // template fields don't need a name in dashboard view
-                    .label('Actions')
-                    .template('<custom-post-link></custom-post-link>') // you can use custom directives, too
+                nga.field('body', 'wysiwyg')
+                    .label('Comment')
+                    .stripTags(true)
+                    .map(truncate),
+                nga.field(null, 'template') // template fields don't need a name in dashboard view
+                    .label('')
+                    .template('<post-link entry="entry"></post-link>') // you can use custom directives, too
             ]);
 
         comment.listView()
@@ -199,7 +153,10 @@
                 nga.field('created_at', 'date')
                     .label('Posted')
                     .order(1),
-                nga.field('body').map(truncate).order(3),
+                nga.field('body', 'wysiwyg')
+                    .stripTags(true)
+                    .map(truncate)
+                    .order(3),
                 nga.field('post_id', 'reference')
                     .label('Post')
                     .map(truncate)
@@ -209,11 +166,10 @@
                 nga.field('author').order(2)
             ])
             .filters([
-                nga.field('q').label('').attributes({'placeholder': 'Global Search'}),
+                nga.field('q', 'string').label('').attributes({'placeholder': 'Global Search'}),
                 nga.field('created_at', 'date')
                     .label('Posted')
-                    .attributes({'placeholder': 'Filter by date'})
-                    .format('yyyy-MM-dd'),
+                    .attributes({'placeholder': 'Filter by date'}),
                 nga.field('today', 'boolean').map(function() {
                     var now = new Date(),
                         year = now.getFullYear(),
@@ -223,7 +179,7 @@
                     day = day < 10 ? '0' + day : day;
                     return {
                         created_at: [year, month, day].join('-') // ?created_at=... will be appended to the API call
-                    };
+                    };                    
                 }),
                 nga.field('post_id', 'reference')
                     .label('Post')
@@ -248,22 +204,18 @@
 
         comment.editionView()
             .fields(comment.creationView().fields())
-            .fields([nga.field('', 'template')
-                .label('Actions')
-                .template('<custom-post-link></custom-post-link>') // template() can take a function or a string
+            .fields([nga.field(null, 'template')
+                .label('')
+                .template('<post-link entry="entry"></post-link>') // template() can take a function or a string
             ]);
 
         comment.deletionView()
             .title('Deletion confirmation'); // customize the deletion confirmation message
 
-        tag.menuView()
-            .order(3)
-            .icon('<span class="glyphicon glyphicon-tags"></span>');
-
         tag.dashboardView()
             .title('Recent tags')
             .order(3)
-            .limit(10)
+            .perPage(10)
             .fields([
                 nga.field('id'),
                 nga.field('name'),
@@ -285,6 +237,7 @@
                     .label('Upper name')
                     .template('{{ entry.values.name.toUpperCase() }}')
             ])
+            .batchActions([]) // disable checkbox column and batch delete
             .listActions(['show']);
 
         tag.showView()
@@ -293,6 +246,98 @@
                 nga.field('published', 'boolean')
             ]);
 
-        NgAdminConfigurationProvider.configure(app);
+        admin.menu(nga.menu()
+            .addChild(nga.menu(post).icon('<span class="glyphicon glyphicon-file"></span>')) // customize the entity menu icon
+            .addChild(nga.menu(comment).icon('<strong style="font-size:1.3em;line-height:1em">✉</strong>')) // you can even use utf-8 symbols!
+            .addChild(nga.menu(tag).icon('<span class="glyphicon glyphicon-tags"></span>'))
+            .addChild(nga.menu().title('Other')
+                .addChild(nga.menu().title('Stats').icon('').link('/stats'))
+            )
+        );
+
+        nga.configure(admin);
     });
+
+    app.directive('postLink', ['$location', function ($location) {
+        return {
+            restrict: 'E',
+            scope: { entry: '&' },
+            template: '<p class="form-control-static"><a ng-click="displayPost()">View&nbsp;post</a></p>',
+            link: function (scope) {
+                scope.displayPost = function () {
+                    $location.path('/show/posts/' + scope.entry().values.post_id);
+                };
+            }
+        };
+    }]);
+
+    app.directive('sendEmail', ['$location', function ($location) {
+        return {
+            restrict: 'E',
+            scope: { post: '&' },
+            template: '<a class="btn btn-default" ng-click="send()">Send post by email</a>',
+            link: function (scope) {
+                scope.send = function () {
+                    $location.path('/sendPost/' + scope.post().values.id);
+                };
+            }
+        };
+    }]);
+
+    // custom 'send post by email' page
+
+    function sendPostController($stateParams, notification) {
+        this.postId = $stateParams.id;
+        // notification is the service used to display notifications on the top of the screen
+        this.notification = notification;
+    };
+    sendPostController.prototype.sendEmail = function() {
+        if (this.email) {
+            this.notification.log('Email successfully sent to ' + this.email, {addnCls: 'humane-flatty-success'});
+        } else {
+            this.notification.log('Email is undefined', {addnCls: 'humane-flatty-error'});
+        }
+    }
+    sendPostController.inject = ['$stateParams', 'notification'];
+
+    var sendPostControllerTemplate =
+        '<div class="row"><div class="col-lg-12">' +
+            '<ma-view-actions><ma-back-button></ma-back-button></ma-view-actions>' +
+            '<div class="page-header">' +
+                '<h1>Send post #{{ controller.postId }} by email</h1>' +
+                '<p class="lead">You can add custom pages, too</p>' +
+            '</div>' +
+        '</div></div>' +
+        '<div class="row">' +
+            '<div class="col-lg-5"><input type="text" size="10" ng-model="controller.email" class="form-control" placeholder="name@example.com"/></div>' +
+            '<div class="col-lg-5"><a class="btn btn-default" ng-click="controller.sendEmail()">Send</a></div>' +
+        '</div>';
+
+    app.config(function ($stateProvider) {
+        $stateProvider.state('send-post', {
+            parent: 'main',
+            url: '/sendPost/:id',
+            params: { id: null },
+            controller: sendPostController,
+            controllerAs: 'controller',
+            template: sendPostControllerTemplate
+        });
+    });
+
+    // custom page with menu item
+    var customPageTemplate = '<div class="row"><div class="col-lg-12">' +
+            '<ma-view-actions><ma-back-button></ma-back-button></ma-view-actions>' +
+            '<div class="page-header">' +
+                '<h1>Stats</h1>' +
+                '<p class="lead">You can add custom pages, too</p>' +
+            '</div>' +
+        '</div></div>';
+    app.config(function ($stateProvider) {
+        $stateProvider.state('stats', {
+            parent: 'main',
+            url: '/stats',
+            template: customPageTemplate
+        });
+    });
+
 }());
