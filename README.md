@@ -6,15 +6,16 @@ The interesting part of the code is in [public/app.js](https://github.com/marmel
 
 ## Installation
 
-```
+```sh
 make install
 ```
 
 ## Run
 
-Run json-server :
+Run the web server:
+
 ```sh
-node server.js
+make run
 ```
 
 You can now open `http://localhost:3000/`
