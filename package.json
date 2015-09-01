@@ -1,0 +1,28 @@
+{
+  "name": "commerce-admin",
+  "version": "0.0.1",
+  "description": "A ng-admin demo on e-commerce domain",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "admin-config": "^0.2.15",
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.22",
+    "babel-loader": "^5.3.2",
+    "chance": "^0.7.6",
+    "css-loader": "^0.16.0",
+    "fakerest": "^1.0.6",
+    "md5": "^2.0.0",
+    "moment": "^2.10.6",
+    "ng-admin": "marmelab/ng-admin",
+    "sinon": "ubervu/Sinon.JS",
+    "style-loader": "^0.12.3",
+    "webpack": "^1.12.0",
+    "webpack-dev-server": "^1.10.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "François Zaninotto",
+  "license": "MIT"
+}
