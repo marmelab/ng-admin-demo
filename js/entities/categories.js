@@ -1,6 +1,6 @@
-export default function (nga) {
+export default function (nga, admin) {
 
-    var categories = nga.entity('categories');
+    var categories = admin.getEntity('categories');
     categories.listView()
         .fields([
             nga.field('name'),

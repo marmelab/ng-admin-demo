@@ -1,6 +1,6 @@
-export default function (nga) {
+export default function (nga, admin) {
 
-    var commands = nga.entity('commands');
+    var commands = admin.getEntity('commands');
     commands.listView()
         .sortField('date')
         .sortDir('DESC')
@@ -9,7 +9,7 @@ export default function (nga) {
             nga.field('reference').isDetailLink(true),
             nga.field('customer_id', 'reference')
                 .label('Customer')
-                .targetEntity(nga.entity('customers'))
+                .targetEntity(admin.getEntity('customers'))
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
             nga.field('nb_items')
                 .map((v,e) => e.basket.length),
@@ -24,7 +24,7 @@ export default function (nga) {
                 .template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'),
             nga.field('customer_id', 'reference')
                 .label('Customer')
-                .targetEntity(nga.entity('customers'))
+                .targetEntity(admin.getEntity('customers'))
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
                 .remoteComplete(true, {
                     searchQuery: function(search) { return { q: search }; }
@@ -45,7 +45,7 @@ export default function (nga) {
                 .editable(false),
             nga.field('customer_id', 'reference')
                 .label('Customer')
-                .targetEntity(nga.entity('customers'))
+                .targetEntity(admin.getEntity('customers'))
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
                 .editable(false),
             nga.field('Items', 'template')

@@ -1,6 +1,6 @@
-export default function (nga) {
+export default function (nga, admin) {
 
-    var products = nga.entity('products');
+    var products = admin.getEntity('products');
     products.listView()
         .fields([
             nga.field('i', 'template')
@@ -15,7 +15,7 @@ export default function (nga) {
                 .format('0.00'),
             nga.field('category_id', 'reference')
                 .label('Category')
-                .targetEntity(nga.entity('categories'))
+                .targetEntity(admin.getEntity('categories'))
                 .targetField(nga.field('name')),
             nga.field('stock', 'number'),
         ])
@@ -26,7 +26,7 @@ export default function (nga) {
                 .template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'),
             nga.field('category_id', 'reference')
                 .label('Category')
-                .targetEntity(nga.entity('categories'))
+                .targetEntity(admin.getEntity('categories'))
                 .targetField(nga.field('name')),
             nga.field('stock', 'template')
                 .label('Out of stock')
@@ -45,7 +45,7 @@ export default function (nga) {
                 .cssClasses('col-sm-4 col-lg-2'),
             nga.field('category_id', 'reference')
                 .label('Category')
-                .targetEntity(nga.entity('categories'))
+                .targetEntity(admin.getEntity('categories'))
                 .targetField(nga.field('name'))
                 .cssClasses('col-sm-4 col-lg-2'),
             nga.field('stock', 'number')
@@ -56,7 +56,7 @@ export default function (nga) {
         .fields(
             products.creationView().fields(),
             nga.field('reviews', 'referenced_list')
-                    .targetEntity(nga.entity('reviews'))
+                    .targetEntity(admin.getEntity('reviews'))
                     .targetReferenceField('product_id')
                     .targetFields([
                         nga.field('date', 'datetime')

@@ -27,28 +27,25 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
         .baseApiUrl('/');
 
     // add entities
-    var customers = require('./entities/customers')(nga);
-    admin.addEntity(customers);
+    admin.addEntity(nga.entity('customers'));
+    admin.addEntity(nga.entity('categories'));
+    admin.addEntity(nga.entity('products'));
+    admin.addEntity(nga.entity('reviews'));
+    admin.addEntity(nga.entity('commands'));
 
-    var categories = require('./entities/categories')(nga);
-    admin.addEntity(categories);
+    require('./entities/customers')(nga, admin);
+    require('./entities/categories')(nga, admin);
+    require('./entities/products')(nga, admin);
+    require('./entities/reviews')(nga, admin);
+    require('./entities/commands')(nga, admin);
 
-    var products = require('./entities/products')(nga);
-    admin.addEntity(products);
-
-    var reviews = require('./entities/reviews')(nga);
-    admin.addEntity(reviews);
-
-    var commands = require('./entities/commands')(nga);
-    admin.addEntity(commands);
-
-    var dashboard = require('./dashboard')(nga, commands, reviews, customers);
+    var dashboard = require('./dashboard')(nga, admin);
     admin.dashboard(dashboard);
 
     var header = require('./header');
     admin.header(header);
 
-    var menu = require('./menu')(nga, customers, categories, products, reviews, commands);
+    var menu = require('./menu')(nga, admin);
     admin.menu(menu);
 
     // attach the admin application to the DOM and execute it

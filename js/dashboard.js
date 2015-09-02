@@ -1,10 +1,10 @@
 var moment = require('moment');
 var fromNow = v => moment(v).fromNow();
 
-export default function (nga, commands, reviews, customers) {
+export default function (nga, admin) {
 
     return nga.dashboard()
-        .addCollection(nga.collection(commands)
+        .addCollection(nga.collection(admin.getEntity('commands'))
                 .name('monthly_revenue')
                 .title('Monthly revenue')
                 //.permanentFilters({ date: { gte: moment().substract(1, 'months').toDate() } })
@@ -16,7 +16,7 @@ export default function (nga, commands, reviews, customers) {
                 .sortDir('ASC')
                 .perPage(100)
         )
-        .addCollection(nga.collection(commands)
+        .addCollection(nga.collection(admin.getEntity('commands'))
             .name('pending_orders')
             .title('Pending orders')
             .fields([
@@ -24,7 +24,7 @@ export default function (nga, commands, reviews, customers) {
                 nga.field('reference').isDetailLink(true),
                 nga.field('customer_id', 'reference')
                     .label('Customer')
-                    .targetEntity(nga.entity('customers'))
+                    .targetEntity(admin.getEntity('customers'))
                     .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
                 nga.field('nb_items')
                     .map((v,e) => e.basket.length),
@@ -34,17 +34,17 @@ export default function (nga, commands, reviews, customers) {
             .sortField('date')
             .sortDir('DESC')
         )
-        .addCollection(nga.collection(reviews)
+        .addCollection(nga.collection(admin.getEntity('reviews'))
             .name('latest_reviews')
             .title('Latest reviews')
             .fields([
                 nga.field('customer_id', 'reference')
                     .label('Customer')
-                    .targetEntity(nga.entity('customers'))
+                    .targetEntity(admin.getEntity('customers'))
                     .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
                 nga.field('product_id', 'reference')
                     .label('Product')
-                    .targetEntity(nga.entity('products'))
+                    .targetEntity(admin.getEntity('products'))
                     .targetField(nga.field('reference')),
                 nga.field('rating', 'template')
                     .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
@@ -53,7 +53,7 @@ export default function (nga, commands, reviews, customers) {
             .sortDir('DESC')
             .perPage(10)
         )
-        .addCollection(nga.collection(customers)
+        .addCollection(nga.collection(admin.getEntity('customers'))
             .name('new_customers')
             .title('New customers')
             .fields([

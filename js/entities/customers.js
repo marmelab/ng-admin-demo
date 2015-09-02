@@ -3,9 +3,9 @@ var fromNow = v => moment(v).fromNow();
 
 var segments = require('../utils/segments');
 
-export default function (nga) {
+export default function (nga, admin) {
 
-    var customer = nga.entity('customers');
+    var customer = admin.getEntity('customers');
     customer.listView()
         .title('Visitors')
         .fields([
@@ -26,8 +26,8 @@ export default function (nga) {
             nga.field('latest_purchase', 'datetime'),
             nga.field('has_newsletter', 'boolean')
                 .label('Newsletter'),
-            nga.field('groups', 'template')
-                .template('<span ng-repeat="group in entry.values.groups" class="label label-default">{{ group }}</span>'),
+            nga.field('segments', 'template')
+                .template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>'),
         ])
         .filters([
             nga.field('q', 'template')
@@ -63,11 +63,13 @@ export default function (nga) {
                 .choices(segments),
             nga.field('commands', 'referenced_list')
                 .label('Latest commands')
-                .targetEntity(nga.entity('commands'))
+                .targetEntity(admin.getEntity('commands'))
                 .targetReferenceField('customer_id')
                 .targetFields([
-                    nga.field('date', 'datetime'),
-                    nga.field('reference'),
+                    nga.field('date', 'datetime')
+                        .isDetailLink(true),
+                    nga.field('reference')
+                        .isDetailLink(true),
                     nga.field('nb_items')
                         .map((v,e) => e.basket.length),
                     nga.field('total', 'amount'),
@@ -81,11 +83,12 @@ export default function (nga) {
                 .template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'),
             nga.field('reviews', 'referenced_list')
                 .label('Latest reviews')
-                .targetEntity(nga.entity('reviews'))
+                .targetEntity(admin.getEntity('reviews'))
                 .targetReferenceField('customer_id')
                 .targetFields([
                     nga.field('date', 'datetime')
-                        .label('Posted'),
+                        .label('Posted')
+                        .isDetailLink(true),
                     nga.field('rating', 'template')
                         .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
                     nga.field('comment')

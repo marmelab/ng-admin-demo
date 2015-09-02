@@ -1,4 +1,4 @@
-export default function (nga, customers, categories, products, reviews, commands) {
+export default function (nga, admin) {
     return nga.menu()
         .addChild(nga.menu()
             .title('Visitors')
@@ -31,12 +31,12 @@ export default function (nga, customers, categories, products, reviews, commands
         )
         .addChild(nga.menu().title('Catalog')
             .icon('<span class="fa fa-th-list fa-fw"></span>')
-            .addChild(nga.menu(products)
+            .addChild(nga.menu(admin.getEntity('products'))
                 .icon('<span class="fa fa-picture-o fa-fw"></span>'))
-            .addChild(nga.menu(categories)
+            .addChild(nga.menu(admin.getEntity('categories'))
                 .icon('<span class="fa fa-tags fa-fw"></span>'))
         )
-        .addChild(nga.menu(reviews)
+        .addChild(nga.menu(admin.getEntity('reviews'))
             .icon('<span class="fa fa-comments fa-fw"></span>'))
     ;
 }

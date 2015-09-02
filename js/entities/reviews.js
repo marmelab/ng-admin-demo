@@ -1,6 +1,6 @@
-export default function (nga) {
+export default function (nga, admin) {
 
-    var reviews = nga.entity('reviews');
+    var reviews = admin.getEntity('reviews');
     reviews.listView()
         .sortField('date')
         .sortDir('DESC')
@@ -8,11 +8,11 @@ export default function (nga) {
             nga.field('date', 'datetime'),
             nga.field('customer_id', 'reference')
                 .label('Customer')
-                .targetEntity(nga.entity('customers'))
+                .targetEntity(admin.getEntity('customers'))
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
             nga.field('product_id', 'reference')
                 .label('Product')
-                .targetEntity(nga.entity('products'))
+                .targetEntity(admin.getEntity('products'))
                 .targetField(nga.field('reference')),
             nga.field('rating', 'template')
                 .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
@@ -31,14 +31,14 @@ export default function (nga) {
                 .template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'),
             nga.field('customer_id', 'reference')
                 .label('Customer')
-                .targetEntity(nga.entity('customers'))
+                .targetEntity(admin.getEntity('customers'))
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
                 .remoteComplete(true, {
                     searchQuery: function(search) { return { q: search }; }
                 }),
             nga.field('product_id', 'reference')
                 .label('Product')
-                .targetEntity(nga.entity('products'))
+                .targetEntity(admin.getEntity('products'))
                 .targetField(nga.field('reference'))
                 .remoteComplete(true, {
                     searchQuery: function(search) { return { q: search }; }
@@ -51,15 +51,15 @@ export default function (nga) {
             nga.field('date', 'datetime'),
             nga.field('customer_id', 'reference')
                 .label('Customer')
-                .targetEntity(nga.entity('customers'))
+                .targetEntity(admin.getEntity('customers'))
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
             nga.field('command_id', 'reference')
                 .label('Command')
-                .targetEntity(nga.entity('commands'))
+                .targetEntity(admin.getEntity('commands'))
                 .targetField(nga.field('reference')),
             nga.field('product_id', 'reference')
                 .label('Product')
-                .targetEntity(nga.entity('products'))
+                .targetEntity(admin.getEntity('products'))
                 .targetField(nga.field('reference')),
             nga.field('rating', 'template')
                 .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
