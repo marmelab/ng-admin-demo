@@ -16,17 +16,17 @@ function dashboardSummary(Restangular) {
                     $scope.stats.commands = commands.data
                         .filter(command => new Date(command.date) > oneMonthAgo)
                         .reduce((stats, command) => {
-                            stats.revenue += command.total;
-                            stats.nb_commands++;
+                            if (command.status != 'cancelled') stats.revenue += command.total;
+                            if (command.status == 'ordered') stats.pending_orders++;
                             return stats;
-                        }, { revenue: 0, nb_commands: 0})
+                        }, { revenue: 0, pending_orders: 0})
                 });
             Restangular
                 .all('customers')
-                .getList({range: '[1,100]', sort: '["first_seen","DESC"]'})
+                .getList({range: '[1,100]', sort: '["first_seen","DESC"]', filter: '{"has_ordered":true}'})
                 .then(customers => {
                     $scope.stats.customers = customers.data
-                        .filter(customer => customer.has_ordered && new Date(customer.first_seen) > oneMonthAgo)
+                        .filter(customer => new Date(customer.first_seen) > oneMonthAgo)
                         .reduce(nb => ++nb, 0)
                 });
             Restangular
@@ -64,19 +64,41 @@ function dashboardSummary(Restangular) {
         </div>
     </div>
     <div class="col-lg-3">
+        <div class="panel panel-green">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-shopping-cart fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{ stats.commands.pending_orders }}</div>
+                        <div>Pending orders</div>
+                    </div>
+                </div>
+            </div>
+            <a ui-sref="list({entity:'commands',search:{status:'ordered'}})">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-3">
         <div class="panel panel-yellow">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-3">
-                        <i class="fa fa-cart-plus fa-5x"></i>
+                        <i class="fa fa-comments fa-5x"></i>
                     </div>
                     <div class="col-xs-9 text-right">
-                        <div class="huge">{{ stats.commands.nb_commands }}</div>
-                        <div>New orders</div>
+                        <div class="huge">{{ stats.reviews }}</div>
+                        <div>New reviews</div>
                     </div>
                 </div>
             </div>
-            <a ui-sref="list({entity:'commands'})">
+            <a ui-sref="list({entity:'reviews'})">
                 <div class="panel-footer">
                     <span class="pull-left">View Details</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -98,29 +120,7 @@ function dashboardSummary(Restangular) {
                     </div>
                 </div>
             </div>
-            <a ui-sref="list({entity:'customers'})">
-                <div class="panel-footer">
-                    <span class="pull-left">View Details</span>
-                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                    <div class="clearfix"></div>
-                </div>
-            </a>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <div class="panel panel-green">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-3">
-                        <i class="fa fa-comments fa-5x"></i>
-                    </div>
-                    <div class="col-xs-9 text-right">
-                        <div class="huge">{{ stats.reviews }}</div>
-                        <div>New reviews</div>
-                    </div>
-                </div>
-            </div>
-            <a ui-sref="list({entity:'reviews'})">
+            <a ui-sref="list({entity:'customers',search:{has_ordered:true}})">
                 <div class="panel-footer">
                     <span class="pull-left">View Details</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>

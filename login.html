@@ -1,0 +1,50 @@
+<!--
+Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Posters Galore Login</title>
+        <meta charset="utf-8">
+        <link href="css/login.css" rel='stylesheet' type='text/css' />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,300,600,700' rel='stylesheet' type='text/css'>
+</head>
+<body>
+     <div class="main">
+        <div class="login-form">
+            <h1>Posters Galore Member Login</h1>
+            <div class="head">
+                <img src="images/user.png" alt=""/>
+            </div>
+            <form>
+                <input type="text" class="text" id="username" value="Username" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Username';}" >
+                <input type="password" value="Password" id="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}">
+                <div class="submit">
+                    <input type="button" onclick="login()" value="Log In" >
+                </div>  
+                <p><a href="#">Hint: John / Password</a></p>
+            </form>
+        </div>
+         <!-- start-copyright -->
+        <div class="copy-right">
+            <p>Template by <a href="http://w3layouts.com">w3layouts</a></p> 
+        </div>
+        <!-- end-copyright -->
+    </div>
+    <script type="application/x-javascript">
+    window.addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); 
+    function hideURLbar(){ 
+        window.scrollTo(0,1); 
+    }
+    function login() {
+        window.localStorage.setItem('posters_galore_login', document.getElementById('username').value);
+        window.location.href = "/";
+        return false;
+    } 
+    </script>
+</body>
+</html>

@@ -6,5 +6,11 @@
         <div ui-view></div>
         <script type="text/javascript" src="data.js" charset="utf-8"></script>
         <script type="text/javascript" src="build/main.js" charset="utf-8"></script>
+        <script type="text/javascript">
+        function logout() {
+            window.localStorage.removeItem('posters_galore_login');
+            window.location.href = "/login.html";
+        }
+        </script>
     </body>
 </html>
