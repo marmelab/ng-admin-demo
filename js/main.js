@@ -1,5 +1,4 @@
 require('ng-admin');
-require('ng-admin/build/ng-admin.min.css');
 require('./api');
 
 var myApp = angular.module('myApp', ['ng-admin']);
