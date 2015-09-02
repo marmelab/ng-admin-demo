@@ -52,7 +52,7 @@
 	
 	var username = window.localStorage.getItem('posters_galore_login');
 	if (!username) {
-	    window.location.href = "/login.html";
+	    window.location.href = "./login.html";
 	}
 	
 	var myApp = angular.module('myApp', ['ng-admin']);
