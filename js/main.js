@@ -53,21 +53,11 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
     var dashboard = require('./dashboard')(nga, commands, reviews, customers);
     admin.dashboard(dashboard);
 
-    admin.header(`
-<div class="navbar-header">
-    <a class="navbar-brand" href="#" ng-click="appController.displayHome()">Posters Galore Administration</a>
-</div>
-<ul class="nav navbar-top-links navbar-right">
-    <li dropdown>
-        <a dropdown-toggle href="#" style="padding:15px" aria-expanded="true">
-            <i class="fa fa-user fa-fw"></i> ${ username } <i class="fa fa-caret-down"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-user" role="menu">
-            <li><a href="#" onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
-        </ul>
-    </li>
-</ul>
-`);
+    var header = require('./header');
+    admin.header(header);
+
+    var menu = require('./menu')(nga, customers, categories, products, reviews, commands);
+    admin.menu(menu);
 
     // attach the admin application to the DOM and execute it
     nga.configure(admin);

@@ -30,8 +30,9 @@ export default function (nga, commands, reviews, customers) {
                     .map((v,e) => e.basket.length),
                 nga.field('total', 'amount')
             ])
+            .permanentFilters({status: 'ordered'})
             .sortField('date')
-            .sortDir('ASC')
+            .sortDir('DESC')
         )
         .addCollection(nga.collection(reviews)
             .name('latest_reviews')

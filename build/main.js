@@ -100,7 +100,11 @@
 	    var dashboard = __webpack_require__(126)(nga, commands, reviews, customers);
 	    admin.dashboard(dashboard);
 	
-	    admin.header('\n<div class="navbar-header">\n    <a class="navbar-brand" href="#" ng-click="appController.displayHome()">Posters Galore Administration</a>\n</div>\n<ul class="nav navbar-top-links navbar-right">\n    <li dropdown>\n        <a dropdown-toggle href="#" style="padding:15px" aria-expanded="true">\n            <i class="fa fa-user fa-fw"></i> ' + username + ' <i class="fa fa-caret-down"></i>\n        </a>\n        <ul class="dropdown-menu dropdown-user" role="menu">\n            <li><a href="#" onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>\n        </ul>\n    </li>\n</ul>\n');
+	    var header = __webpack_require__(127);
+	    admin.header(header);
+	
+	    var menu = __webpack_require__(128)(nga, customers, categories, products, reviews, commands);
+	    admin.menu(menu);
 	
 	    // attach the admin application to the DOM and execute it
 	    nga.configure(admin);
@@ -16020,10 +16024,40 @@
 	        return e.first_name + ' ' + e.last_name;
 	    })), nga.field('nb_items').map(function (v, e) {
 	        return e.basket.length;
-	    }), nga.field('total', 'amount')]).sortField('date').sortDir('ASC')).addCollection(nga.collection(reviews).name('latest_reviews').title('Latest reviews').fields([nga.field('customer_id', 'reference').label('Customer').targetEntity(nga.entity('customers')).targetField(nga.field('last_name').map(function (v, e) {
+	    }), nga.field('total', 'amount')]).permanentFilters({ status: 'ordered' }).sortField('date').sortDir('DESC')).addCollection(nga.collection(reviews).name('latest_reviews').title('Latest reviews').fields([nga.field('customer_id', 'reference').label('Customer').targetEntity(nga.entity('customers')).targetField(nga.field('last_name').map(function (v, e) {
 	        return e.first_name + ' ' + e.last_name;
 	    })), nga.field('product_id', 'reference').label('Product').targetEntity(nga.entity('products')).targetField(nga.field('reference')), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>')]).sortField('date').sortDir('DESC').perPage(10)).addCollection(nga.collection(customers).name('new_customers').title('New customers').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" />'), nga.field('last_name', 'template') // use last_name for sorting
 	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow)]).permanentFilters({ has_ordered: true }).sortField('first_seen').sortDir('DESC').perPage(10)).template('\n<div class="row dashboard-starter"></div>\n<dashboard-summary></dashboard-summary>\n<div class="row dashboard-content">\n    <div class="col-lg-6">\n        <div class="panel panel-default">\n            <ma-dashboard-panel collection="dashboardController.collections.pending_orders" entries="dashboardController.entries.pending_orders"></ma-dashboard-panel>\n        </div>\n    </div>\n    <div class="col-lg-6">\n        <div class="panel panel-default">\n            <ma-dashboard-panel collection="dashboardController.collections.latest_reviews" entries="dashboardController.entries.latest_reviews"></ma-dashboard-panel>\n        </div>\n        <div class="panel panel-default">\n            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n        </div>\n    </div>\n</div>\n');
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 127 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	var username = window.localStorage.getItem('posters_galore_login');
+	
+	exports['default'] = '\n<div class="navbar-header">\n    <a class="navbar-brand" href="#" ng-click="appController.displayHome()">Posters Galore Administration</a>\n</div>\n<ul class="nav navbar-top-links navbar-right">\n    <li dropdown>\n        <a dropdown-toggle href="#" style="padding:15px" aria-expanded="true">\n            <i class="fa fa-user fa-fw"></i> ' + username + ' <i class="fa fa-caret-down"></i>\n        </a>\n        <ul class="dropdown-menu dropdown-user" role="menu">\n            <li><a href="#" onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>\n        </ul>\n    </li>\n</ul>\n';
+	module.exports = exports['default'];
+
+/***/ },
+/* 128 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	exports['default'] = function (nga, customers, categories, products, reviews, commands) {
+	    return nga.menu().addChild(nga.menu(customers).icon('<span class="fa fa-user fa-fw"></span>')).addChild(nga.menu(commands).icon('<span class="fa fa-shopping-cart fa-fw"></span>')).addChild(nga.menu().title('Catalog').icon('<span class="fa fa-th-list fa-fw"></span>').addChild(nga.menu(categories).icon('<span class="fa fa-tags fa-fw"></span>')).addChild(nga.menu(products).icon('<span class="fa fa-picture-o fa-fw"></span>'))).addChild(nga.menu(reviews).icon('<span class="fa fa-comments fa-fw"></span>'));
 	};
 	
 	module.exports = exports['default'];
