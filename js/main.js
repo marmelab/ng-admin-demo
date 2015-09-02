@@ -2,14 +2,7 @@ require('ng-admin');
 require('ng-admin/build/ng-admin.min.css');
 require('./api');
 
-var username = window.localStorage.getItem('posters_galore_login');
-if (!username) {
-    window.location.href = "./login.html";
-}
-
 var myApp = angular.module('myApp', ['ng-admin']);
-
-myApp.value('username', username);
 
 // custom API flavor
 var apiFlavor = require('./api_flavor');

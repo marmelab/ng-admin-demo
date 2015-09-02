@@ -7,6 +7,7 @@ export default function (nga) {
 
     var customer = nga.entity('customers');
     customer.listView()
+        .title('Visitors')
         .fields([
             nga.field('avatar', 'template')
                 .label('')

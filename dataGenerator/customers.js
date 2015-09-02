@@ -23,7 +23,7 @@ export default function(db, chance) {
             last_seen: last_seen,
             has_ordered: has_ordered,
             latest_purchase: null, // finalize
-            has_newsletter: chance.bool({likelihood: 30}),
+            has_newsletter: has_ordered ? chance.bool({likelihood: 30}) : true,
             groups: [], // finalize
             nb_commands: 0,
             total_spent: 0
