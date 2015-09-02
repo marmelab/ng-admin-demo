@@ -50,7 +50,14 @@
 	__webpack_require__(2);
 	__webpack_require__(6);
 	
+	var username = window.localStorage.getItem('posters_galore_login');
+	if (!username) {
+	    window.location.href = "/login.html";
+	}
+	
 	var myApp = angular.module('myApp', ['ng-admin']);
+	
+	myApp.value('username', username);
 	
 	// custom API flavor
 	var apiFlavor = __webpack_require__(23);
@@ -72,7 +79,7 @@
 	
 	myApp.config(['NgAdminConfigurationProvider', function (nga) {
 	    // create the admin application
-	    var admin = nga.application('My First Admin').title('Posters Galore Administration').baseApiUrl('/');
+	    var admin = nga.application('My First Admin').baseApiUrl('/');
 	
 	    // add entities
 	    var customers = __webpack_require__(120)(nga);
@@ -92,6 +99,8 @@
 	
 	    var dashboard = __webpack_require__(126)(nga, commands, reviews, customers);
 	    admin.dashboard(dashboard);
+	
+	    admin.header('\n<div class="navbar-header">\n    <a class="navbar-brand" href="#" ng-click="appController.displayHome()">Posters Galore Administration</a>\n</div>\n<ul class="nav navbar-top-links navbar-right">\n    <li dropdown>\n        <a dropdown-toggle href="#" style="padding:15px" aria-expanded="true">\n            <i class="fa fa-user fa-fw"></i> ' + username + ' <i class="fa fa-caret-down"></i>\n        </a>\n        <ul class="dropdown-menu dropdown-user" role="menu">\n            <li><a href="#" onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>\n        </ul>\n    </li>\n</ul>\n');
 	
 	    // attach the admin application to the DOM and execute it
 	    nga.configure(admin);
@@ -4326,14 +4335,14 @@
 	                $scope.stats.commands = commands.data.filter(function (command) {
 	                    return new Date(command.date) > oneMonthAgo;
 	                }).reduce(function (stats, command) {
-	                    stats.revenue += command.total;
-	                    stats.nb_commands++;
+	                    if (command.status != 'cancelled') stats.revenue += command.total;
+	                    if (command.status == 'ordered') stats.pending_orders++;
 	                    return stats;
-	                }, { revenue: 0, nb_commands: 0 });
+	                }, { revenue: 0, pending_orders: 0 });
 	            });
-	            Restangular.all('customers').getList({ range: '[1,100]', sort: '["first_seen","DESC"]' }).then(function (customers) {
+	            Restangular.all('customers').getList({ range: '[1,100]', sort: '["first_seen","DESC"]', filter: '{"has_ordered":true}' }).then(function (customers) {
 	                $scope.stats.customers = customers.data.filter(function (customer) {
-	                    return customer.has_ordered && new Date(customer.first_seen) > oneMonthAgo;
+	                    return new Date(customer.first_seen) > oneMonthAgo;
 	                }).reduce(function (nb) {
 	                    return ++nb;
 	                }, 0);
@@ -4346,7 +4355,7 @@
 	                }, 0);
 	            });
 	        },
-	        template: '\n<div class="row">\n    <div class="col-lg-3">\n        <div class="panel panel-primary">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-usd fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.commands.revenue | number:2 }}</div>\n                        <div>Monthly revenue</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'commands\'})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n\n        </div>\n    </div>\n    <div class="col-lg-3">\n        <div class="panel panel-yellow">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-cart-plus fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.commands.nb_commands }}</div>\n                        <div>New orders</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'commands\'})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n    <div class="col-lg-3">\n        <div class="panel panel-red">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-user-plus fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.customers }}</div>\n                        <div>New customers</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'customers\'})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n    <div class="col-lg-3">\n        <div class="panel panel-green">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-comments fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.reviews }}</div>\n                        <div>New reviews</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'reviews\'})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n'
+	        template: '\n<div class="row">\n    <div class="col-lg-3">\n        <div class="panel panel-primary">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-usd fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.commands.revenue | number:2 }}</div>\n                        <div>Monthly revenue</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'commands\'})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n\n        </div>\n    </div>\n    <div class="col-lg-3">\n        <div class="panel panel-green">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-shopping-cart fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.commands.pending_orders }}</div>\n                        <div>Pending orders</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'commands\',search:{status:\'ordered\'}})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n    <div class="col-lg-3">\n        <div class="panel panel-yellow">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-comments fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.reviews }}</div>\n                        <div>New reviews</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'reviews\'})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n    <div class="col-lg-3">\n        <div class="panel panel-red">\n            <div class="panel-heading">\n                <div class="row">\n                    <div class="col-xs-3">\n                        <i class="fa fa-user-plus fa-5x"></i>\n                    </div>\n                    <div class="col-xs-9 text-right">\n                        <div class="huge">{{ stats.customers }}</div>\n                        <div>New customers</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref="list({entity:\'customers\',search:{has_ordered:true}})">\n                <div class="panel-footer">\n                    <span class="pull-left">View Details</span>\n                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>\n                    <div class="clearfix"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n'
 	    };
 	}
 	
