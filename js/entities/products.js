@@ -1,12 +1,16 @@
+import productsEditionTemplate from './productsEditionTemplate.html';
+
 export default function (nga, admin) {
 
-    var products = admin.getEntity('products');
+    var products = admin.getEntity('products')
+        .label('Posters');
     products.listView()
+        .title('All Posters')
         .fields([
             nga.field('i', 'template')
                 .isDetailLink(true)
                 .label('')
-                .template('<img src="{{ entry.values.image }}" style="max-width:25;max-height:25" />'),
+                .template('<img src="{{ entry.values.thumbnail }}" style="max-width:25;max-height:25" />'),
             nga.field('reference').isDetailLink(true),
             nga.field('price', 'amount'),
             nga.field('width', 'float')
@@ -34,25 +38,38 @@ export default function (nga, admin) {
         ])
         .listActions(['edit', 'delete']);
     products.creationView()
+        .title('Create new Poster')
         .fields([
             nga.field('reference')
-                .cssClasses('col-sm-4 col-lg-2'),
+                .validation({required: true })
+                .cssClasses('col-sm-4'),
             nga.field('price', 'amount')
-                .cssClasses('col-sm-4 col-lg-2'),
+                .validation({required: true })
+                .cssClasses('col-sm-4'),
             nga.field('width', 'float')
-                .cssClasses('col-sm-4 col-lg-2'),
+                .validation({required: true })
+                .cssClasses('col-sm-2'),
             nga.field('height', 'float')
-                .cssClasses('col-sm-4 col-lg-2'),
+                .validation({required: true })
+                .cssClasses('col-sm-2'),
             nga.field('category_id', 'reference')
                 .label('Category')
                 .targetEntity(admin.getEntity('categories'))
                 .targetField(nga.field('name'))
-                .cssClasses('col-sm-4 col-lg-2'),
+                .validation({required: true })
+                .cssClasses('col-sm-4'),
             nga.field('stock', 'number')
-                .cssClasses('col-sm-4 col-lg-2'),
-            nga.field('image'),
+                .validation({required: true, min: 2 })
+                .cssClasses('col-sm-2'),
+            nga.field('thumbnail')
+                .validation({required: true })
+                .cssClasses('col-sm-4'),
+            nga.field('image')
+                .validation({required: true })
+                .cssClasses('col-sm-4'),
         ]);
     products.editionView()
+        .template(productsEditionTemplate)
         .fields(
             products.creationView().fields(),
             nga.field('reviews', 'referenced_list')

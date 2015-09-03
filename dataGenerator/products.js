@@ -14,7 +14,8 @@ export default function(db, chance) {
                 width: width,
                 height: height,
                 price: chance.floating({ min: width*height / 2000, max: width*height / 1500, fixed: 2 }),
-                image: 'http://lorempixel.com/' + (width.toFixed()) + '/' + (height.toFixed()) + '/' + category.name + '/' + j,
+                thumbnail: 'http://lorempixel.com/' + ((width / 3).toFixed()) + '/' + ((height / 3).toFixed()) + '/' + category.name + '/' + j,
+                image: 'http://lorempixel.com/' + ((width * 5).toFixed()) + '/' + ((height * 5).toFixed()) + '/' + category.name + '/' + j,
                 stock: chance.bool({likelihood: 20 }) ? 0 : chance.integer({ min: 0, max: 250 })
             })
         };
