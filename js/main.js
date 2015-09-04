@@ -21,6 +21,9 @@ myApp.directive('starRating', require('./directives/starRating'));
 myApp.directive('basket', require('./directives/basket'));
 myApp.directive('dashboardSummary', require('./directives/dashboardSummary'));
 
+// custom states (pages)
+myApp.config(['$stateProvider', require('./states/segments')]);
+
 myApp.config(['NgAdminConfigurationProvider', function (nga) {
     // create the admin application
     var admin = nga.application('My First Admin')

@@ -3,7 +3,7 @@ var md5 = require('md5');
 export default function(db, chance) {
     var randomDate = require('./randomDate')(chance);
     var customers = [];
-    for (var i = 0; i < 500; i++) {
+    for (var i = 0; i < 900; i++) {
         var first_seen = randomDate();
         var last_seen = randomDate(first_seen)
         var has_ordered = chance.bool({likelihood: 25})

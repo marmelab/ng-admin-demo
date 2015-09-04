@@ -12,6 +12,11 @@ export default function (nga, admin) {
                 .title('Customers')
                 .link('/customers/list?search={"has_ordered":"true"}') // use the same entity list for several menu items
                 .icon('<span class="fa fa-user fa-fw"></span>'))
+            .addChild(nga.menu()
+                .title('Segments')
+                .link('/segments')
+                .active(path => path == '/segments')
+                .icon('<span class="fa fa-scissors fa-fw"></span>'))
         )
         .addChild(nga.menu().title('Sales')
             .icon('<span class="fa fa-shopping-cart fa-fw"></span>')

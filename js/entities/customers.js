@@ -1,7 +1,7 @@
 var moment = require('moment');
 var fromNow = v => moment(v).fromNow();
 
-var segments = require('../utils/segments');
+var segments = require('../utils/segments').choices;
 
 export default function (nga, admin) {
 

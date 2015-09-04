@@ -12,7 +12,7 @@
     "chance": "^0.7.6",
     "css-loader": "^0.16.0",
     "extract-text-webpack-plugin": "^0.8.2",
-    "fakerest": "^1.0.7",
+    "fakerest": "^1.0.8",
     "html-loader": "^0.3.0",
     "md5": "^2.0.0",
     "moment": "^2.10.6",

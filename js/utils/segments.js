@@ -1,3 +1,6 @@
-var segments = ['compulsive', 'collector', 'ordered once', 'regular', 'returns', 'reviewer']
+var segments = ['compulsive', 'collector', 'ordered_once', 'regular', 'returns', 'reviewer']
 
-export default segments.map(segment => { return { label: segment, value: segment } })
+export default {
+	values: segments,
+	choices: segments.map(segment => { return { label: segment, value: segment } })
+};

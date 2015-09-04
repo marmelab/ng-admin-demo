@@ -9,39 +9,44 @@ export default function(db, chance) {
         customer.nb_commands++;
     });
 
-    // add buyer groups
+    // add 'collector' group
     var customersBySpending = db.commands.reduce((customers, command) => {
         if (!customers[command.customer_id]) {
-            customers[command.customer_id] = { nbCommands: 0, total: 0, nbProducts: 0 };
+            customers[command.customer_id] = { nbProducts: 0 };
         }
-        customers[command.customer_id].nbCommands++;
         customers[command.customer_id].nbProducts += command.basket.length;
-        customers[command.customer_id].total += command.total;
         return customers;
     }, {});
     Object.keys(customersBySpending)
         .map(customer_id => {
-            if (customersBySpending[customer_id].total > 1500) {
-                db.customers[customer_id].groups.push('compulsive')
-            }
             if (customersBySpending[customer_id].nbProducts > 10) {
                 db.customers[customer_id].groups.push('collector')
             }
-            if (customersBySpending[customer_id].nbCommands == 1) {
-                db.customers[customer_id].groups.push('ordered once')
-            }
         });
 
-    db.customers.map(customer => {
-        if (chance.bool({likelihood: 20 })) {
-            customer.groups.push('regular');
-        }
-    })
+    // add 'ordered_once' group
+    db.customers
+        .filter(customer => customer.nb_commands == 1)
+        .forEach(customer => customer.groups.push('ordered_once'));
+
+    // add 'compulsive' group
+    db.customers
+        .filter(customer => customer.total_spent > 1500)
+        .forEach(customer => customer.groups.push('compulsive'));
+
+    // add 'regular' group
+    db.customers
+        .filter(() => chance.bool({likelihood: 20 }))
+        .forEach(customer => customer.groups.push('regular'));
 
     // add 'returns' group
     db.commands
         .filter(command => command.returned)
-        .forEach(command =>  db.customers[command.customer_id].groups.push('returns'));
+        .forEach(command => {
+            if (db.customers[command.customer_id].groups.indexOf('returns') === -1) {
+                db.customers[command.customer_id].groups.push('returns');
+            }
+    })
 
     // add 'reviewer' group
     db.reviews.forEach(review => {
