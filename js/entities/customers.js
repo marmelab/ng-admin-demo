@@ -34,9 +34,10 @@ export default function (nga, admin) {
                 .label('')
                 .pinned(true)
                 .template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'),
-            nga.field('has_ordered', 'template')
-                .label('Buyer')
-                .defaultValue(true),
+            nga.field('groups', 'choice')
+                .label('Segment')
+                .choices(segments),
+            nga.field('has_ordered', 'boolean'),
             nga.field('has_newsletter', 'boolean'),
         ])
         .sortField('first_seen')
