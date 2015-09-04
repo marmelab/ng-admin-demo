@@ -3,6 +3,8 @@ import dashboardSummaryTemplate from './dashboardSummary.html';
 
 var oneMonthAgo = moment().subtract(1, 'months').toDate();
 
+var has_seen_alert = false;
+
 function dashboardSummary(Restangular) {
     'use strict';
 
@@ -11,6 +13,11 @@ function dashboardSummary(Restangular) {
         scope: {},
         controller: function($scope) {
             $scope.stats = {};
+            $scope.has_seen_alert = has_seen_alert;
+            $scope.dismissAlert = () => {
+                has_seen_alert = true;
+                $scope.has_seen_alert = true;
+            };
             Restangular
                 .all('commands')
                 .getList({range: '[1,100]', sort: '["date","DESC"]'})
