@@ -22,4 +22,27 @@
 .navbar-right > li > a {
   padding-top: 15px; }
 
+@media (min-width: 768px) {
+  .number, .table-condensed > tbody > tr > td.number {
+    padding-right: 2em; }
+  .table-condensed > thead > tr > th.ng-admin-column-price, .table-condensed > thead > tr > th.ng-admin-column-width, .table-condensed > thead > tr > th.ng-admin-column-height, .table-condensed > thead > tr > th.ng-admin-column-total, .table-condensed > thead > tr > th.ng-admin-column-stock {
+    padding-right: 2em; } }
+
+.number, .table-condensed > tbody > tr > td.number {
+  text-align: right; }
+
+.table-condensed > thead > tr > th.ng-admin-column-price, .table-condensed > thead > tr > th.ng-admin-column-width, .table-condensed > thead > tr > th.ng-admin-column-height, .table-condensed > thead > tr > th.ng-admin-column-total, .table-condensed > thead > tr > th.ng-admin-column-stock {
+  text-align: right;
+  width: 8%; }
+
+table.items > tbody > tr > td {
+  vertical-align: middle; }
+
+.form-control.delivery_fees {
+  padding-right: 0; }
+
+.table-condensed > thead > tr > th.ng-admin-column-unit-price, .table-condensed > thead > tr > th.ng-admin-column-item-total {
+  text-align: right;
+  padding-right: 2em; }
+
 /*# sourceMappingURL=main.css.map*/
