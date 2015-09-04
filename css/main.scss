@@ -30,3 +30,19 @@
             width: 8%;
     }
 }
+
+table.items > tbody > tr > td {
+    vertical-align: middle;
+}
+
+// Basket
+.form-control.delivery_fees {
+    padding-right: 0;
+}
+
+.table-condensed>thead>tr>th {
+    &.ng-admin-column-unit-price, &.ng-admin-column-item-total,  {
+        text-align: right;
+        padding-right: 2em;
+    }
+}
