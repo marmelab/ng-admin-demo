@@ -2,6 +2,8 @@
 
 This is a demo of the [ng-admin](https://github.com/marmelab/ng-admin) module for Angular.js. It creates a working administration for a fake poster shop named **Posters Galore**. You can test it online at [http://marmelab.com/ng-admin-demo](http://marmelab.com/ng-admin-demo).
 
+[![Posters Galore Administration](images/screenshot.png)](http://marmelab.com/ng-admin-demo)
+
 ng-admin usually requires a REST server to provide data. In this demo however, the REST server is simulated by the browser (using [FakeRest](https://github.com/marmelab/FakeRest)). You can see the source data in [data.js](https://github.com/marmelab/ng-admin-demo/blob/master/data.js).
 
 To explore the source code, start with [js/main.js](https://github.com/marmelab/ng-admin-demo/blob/master/js/main.js).
@@ -15,6 +17,7 @@ No installation needed to play with the demo. Just clone the repo, and open the 
 The dataset is generated randomly. You can generate a new dataset with:
 
 ```sh
+# update the data.js file
 make data
 ```
 
@@ -38,7 +41,7 @@ You can now open `http://localhost:8080/webpack-dev-server/`. Every change in th
 You'll need to build the minified source before releasing a new version.
 
 ```sh
-# update the fies under build/
+# update the files under build/
 make build
 ```
 
