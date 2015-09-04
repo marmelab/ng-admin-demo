@@ -10,7 +10,7 @@ export default function (nga, admin) {
             nga.field('i', 'template')
                 .isDetailLink(true)
                 .label('')
-                .template('<img src="{{ entry.values.thumbnail }}" style="max-width:25;max-height:25" />'),
+                .template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'),
             nga.field('reference').isDetailLink(true),
             nga.field('price', 'amount'),
             nga.field('width', 'float')

@@ -1,1 +1,10 @@
 @import "../node_modules/ng-admin/build/ng-admin.min.css";
+
+.poster_mini_thumbnail {
+	max-width:25px;
+	max-height:25px;
+}
+
+.navbar-right > li > a {
+	padding-top: 15px;
+}

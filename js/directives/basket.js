@@ -47,7 +47,7 @@ function basket(Restangular, $q) {
     <th class="col-md-3">Total</th>
 </tr>
 <tr ng-repeat="item in command.basket">
-    <td><img src="{{ productsById[item.product_id].thumbnail }}" style="max-width:25;max-height:25" /></td>
+    <td><img src="{{ productsById[item.product_id].thumbnail }}" class="poster_mini_thumbnail" /></td>
     <td><a ui-sref="edit({entity: 'products', id: item.product_id })"> {{ productsById[item.product_id].reference }}</a></td>
     <td>\${{ productsById[item.product_id].price }}</td>
     <td><input class="form-control input-sm" type="number" min="0" ng-model="item.quantity"/></td>

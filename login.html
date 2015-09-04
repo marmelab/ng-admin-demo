@@ -1,6 +1,6 @@
 <!--
 Author: W3layouts
-Author URL: http://w3layouts.com
+Author URL: https://w3layouts.com/entrar-shadow-flat-form-template/
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 -->
@@ -20,31 +20,34 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             <div class="head">
                 <img src="images/user.png" alt=""/>
             </div>
-            <form>
+            <form onsubmit="return login()">
                 <input type="text" class="text" id="username" value="Username" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Username';}" >
                 <input type="password" value="Password" id="password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Password';}">
                 <div class="submit">
-                    <input type="button" onclick="login()" value="Log In" >
-                </div>  
+                    <input type="submit" value="Log In" >
+                </div>
                 <p><a href="#">Hint: John / Password</a></p>
             </form>
         </div>
          <!-- start-copyright -->
         <div class="copy-right">
-            <p>Template by <a href="http://w3layouts.com">w3layouts</a></p> 
+            <p>Template by <a href="http://w3layouts.com">w3layouts</a></p>
         </div>
         <!-- end-copyright -->
     </div>
     <script type="application/x-javascript">
-    window.addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); 
-    function hideURLbar(){ 
-        window.scrollTo(0,1); 
+    window.addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+    function hideURLbar(){
+        window.scrollTo(0,1);
     }
-    function login() {
+    function login(e) {
+        if (e) {
+            e.prevenDefault();
+        }
         window.localStorage.setItem('posters_galore_login', document.getElementById('username').value);
         window.location.href = "./index.html";
         return false;
-    } 
+    }
     </script>
 </body>
 </html>

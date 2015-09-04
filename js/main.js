@@ -9,10 +9,8 @@ myApp.config(['RestangularProvider', apiFlavor.requestInterceptor]);
 myApp.config(['RestangularProvider', apiFlavor.responseInterceptor]);
 
 // custom 'amount' type
-myApp.config(['NgAdminConfigurationProvider', function(nga) {
+myApp.config(['NgAdminConfigurationProvider', 'FieldViewConfigurationProvider', function(nga, fvp) {
     nga.registerFieldType('amount', require('./types/AmountField'));
-}]);
-myApp.config(['FieldViewConfigurationProvider', function(fvp) {
     fvp.registerFieldView('amount', require('./types/AmountFieldView'));
 }]);
 
@@ -20,6 +18,11 @@ myApp.config(['FieldViewConfigurationProvider', function(fvp) {
 myApp.directive('starRating', require('./directives/starRating'));
 myApp.directive('basket', require('./directives/basket'));
 myApp.directive('dashboardSummary', require('./directives/dashboardSummary'));
+
+// custom controllers
+myApp.controller('username', ['$scope', '$window', function($scope, $window) { // used in header.html
+    $scope.username =  $window.localStorage.getItem('posters_galore_login');
+}])
 
 // custom states (pages)
 myApp.config(['$stateProvider', require('./states/segments')]);
@@ -36,23 +39,17 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
     admin.addEntity(nga.entity('reviews'));
     admin.addEntity(nga.entity('commands'));
 
+    // configure entities
     require('./entities/customers')(nga, admin);
     require('./entities/categories')(nga, admin);
     require('./entities/products')(nga, admin);
     require('./entities/reviews')(nga, admin);
     require('./entities/commands')(nga, admin);
 
-    var dashboard = require('./dashboard')(nga, admin);
-    admin.dashboard(dashboard);
-
-    var header = require('./header');
-    admin.header(header);
-
-    var menu = require('./menu')(nga, admin);
-    admin.menu(menu);
+    admin.dashboard(require('./dashboard')(nga, admin));
+    admin.header(require('./header.html'));
+    admin.menu(require('./menu')(nga, admin));
 
     // attach the admin application to the DOM and execute it
     nga.configure(admin);
 }]);
-
-
