@@ -22,7 +22,7 @@ export default function (nga, admin) {
                 .label('Commands')
                 .template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}'),
             nga.field('total_spent', 'template')
-                .template('<span ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></span>'),
+                .template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>'),
             nga.field('latest_purchase', 'datetime'),
             nga.field('has_newsletter', 'boolean')
                 .label('Newsletter'),

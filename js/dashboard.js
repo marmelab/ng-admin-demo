@@ -29,6 +29,7 @@ export default function (nga, admin) {
                 nga.field('nb_items')
                     .map((v,e) => e.basket.length),
                 nga.field('total', 'amount')
+                    .cssClasses('amount')
             ])
             .permanentFilters({status: 'ordered'})
             .sortField('date')

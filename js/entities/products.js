@@ -12,16 +12,20 @@ export default function (nga, admin) {
                 .label('')
                 .template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'),
             nga.field('reference').isDetailLink(true),
-            nga.field('price', 'amount'),
+            nga.field('price', 'amount')
+                .cssClasses('number'),
             nga.field('width', 'float')
-                .format('0.00'),
+                .format('0.00')
+                .cssClasses('number'),
             nga.field('height', 'float')
-                .format('0.00'),
+                .format('0.00')
+                .cssClasses('number'),
             nga.field('category_id', 'reference')
                 .label('Category')
                 .targetEntity(admin.getEntity('categories'))
                 .targetField(nga.field('name')),
-            nga.field('stock', 'number'),
+            nga.field('stock', 'number')
+                .cssClasses('number'),
         ])
         .filters([
             nga.field('q', 'template')

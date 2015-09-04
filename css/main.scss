@@ -1,10 +1,32 @@
 @import "../node_modules/ng-admin/build/ng-admin.min.css";
 
 .poster_mini_thumbnail {
-	max-width:25px;
-	max-height:25px;
+    max-width:25px;
+    max-height:25px;
 }
 
 .navbar-right > li > a {
-	padding-top: 15px;
+    padding-top: 15px;
+}
+
+@media(min-width:768px) {
+    .number, .table-condensed>tbody>tr>td.number {
+        padding-right: 2em;
+    }
+    .table-condensed>thead>tr>th {
+        &.ng-admin-column-price, &.ng-admin-column-width, &.ng-admin-column-height, &.ng-admin-column-total, &.ng-admin-column-stock {
+                padding-right: 2em;
+        }
+    }
+}
+
+.number, .table-condensed>tbody>tr>td.number {
+    text-align: right;
+}
+
+.table-condensed>thead>tr>th {
+    &.ng-admin-column-price, &.ng-admin-column-width, &.ng-admin-column-height, &.ng-admin-column-total, &.ng-admin-column-stock {
+            text-align: right;
+            width: 8%;
+    }
 }

@@ -13,7 +13,8 @@ export default function (nga, admin) {
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
             nga.field('nb_items')
                 .map((v,e) => e.basket.length),
-            nga.field('total', 'amount'),
+            nga.field('total', 'amount')
+                .cssClasses('number'),
             nga.field('status'),
             nga.field('returned', 'boolean')
         ])
