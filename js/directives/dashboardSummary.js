@@ -40,11 +40,9 @@ function dashboardSummary(Restangular) {
                 });
             Restangular
                 .all('reviews')
-                .getList({range: '[1,100]', sort: '["date","DESC"]'})
+                .getList({range: '[1,100]', sort: '["date","DESC"]', filter: '{"status":"pending"}'})
                 .then(reviews => {
-                    $scope.stats.reviews = reviews.data
-                        .filter(review => new Date(review.date) > oneMonthAgo)
-                        .reduce(nb => ++nb, 0)
+                    $scope.stats.reviews = reviews.data.reduce(nb => ++nb, 0)
                 });
         },
         template: dashboardSummaryTemplate
