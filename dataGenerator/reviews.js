@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 export default function(db, chance) {
     var randomDate = require('./randomDate')(chance);
     var reviews = [];
@@ -13,9 +15,12 @@ export default function(db, chance) {
             basket
                 .filter(p => chance.bool({ likelihood: 40 })) // reviewers review 40% of their products
                 .map(product => {
+                    const date = randomDate(command.date);
+                    const status = moment(date).isBefore(moment().subtract(1, 'months')) ? chance.weighted(['accepted', 'rejected'], [3, 1]) : chance.weighted(['pending', 'accepted', 'rejected'], [5, 3, 1]);
                     reviews.push({
                         id: i++,
-                        date: randomDate(command.date),
+                        date: date,
+                        status: status,
                         command_id: command.id,
                         product_id: product.product_id,
                         customer_id: command.customer_id,

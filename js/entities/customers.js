@@ -67,8 +67,8 @@ export default function (nga, admin) {
                 .targetEntity(admin.getEntity('commands'))
                 .targetReferenceField('customer_id')
                 .targetFields([
-                    nga.field('date', 'datetime')
-                        .isDetailLink(true),
+                    nga.field('date')
+                        .map(fromNow),
                     nga.field('reference')
                         .isDetailLink(true),
                     nga.field('nb_items')
@@ -87,8 +87,9 @@ export default function (nga, admin) {
                 .targetEntity(admin.getEntity('reviews'))
                 .targetReferenceField('customer_id')
                 .targetFields([
-                    nga.field('date', 'datetime')
+                    nga.field('date')
                         .label('Posted')
+                        .map(fromNow)
                         .isDetailLink(true),
                     nga.field('rating', 'template')
                         .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
@@ -98,7 +99,22 @@ export default function (nga, admin) {
                                 return '';
                             }
                             return value.length > 50 ? value.substr(0, 50) + '...' : value;
-                        })
+                        }),
+                    nga.field('status', 'choice')
+                        .choices([
+                            { label: 'accepted', value: 'accepted' },
+                            { label: 'rejected', value: 'rejected' },
+                            { label: 'pending', value: 'pending' }
+                        ])
+                        .cssClasses(function(entry) { // add custom CSS classes to inputs and columns
+                            if (entry.values.status == 'accepted') {
+                                return 'text-center bg-success';
+                            }
+                            if (entry.values.status == 'rejected') {
+                                return 'text-center bg-danger';
+                            }
+                            return 'text-center bg-warning';
+                        }),
                 ])
                 .perPage(5)
                 .sortField('date')

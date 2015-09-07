@@ -1,4 +1,7 @@
+import moment from 'moment';
 import productsEditionTemplate from './productsEditionTemplate.html';
+
+var fromNow = v => moment(v).fromNow();
 
 export default function (nga, admin) {
 
@@ -79,9 +82,12 @@ export default function (nga, admin) {
             nga.field('reviews', 'referenced_list')
                     .targetEntity(admin.getEntity('reviews'))
                     .targetReferenceField('product_id')
+                    .permanentFilters({ status: 'accepted' })
                     .targetFields([
-                        nga.field('date', 'datetime')
-                            .label('Posted'),
+                        nga.field('date')
+                            .label('Posted')
+                            .map(fromNow)
+                            .isDetailLink(true),
                         nga.field('rating', 'template')
                             .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
                         nga.field('comment')
