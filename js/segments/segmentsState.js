@@ -1,5 +1,5 @@
 import segmentsTemplate from './segmentsTemplate.html';
-import segments from '../utils/segments';
+import segments from './segments';
 
 export default function ($stateProvider) {
     $stateProvider.state('segments', {

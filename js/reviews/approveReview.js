@@ -1,11 +1,4 @@
-import moment from 'moment';
-import dashboardSummaryTemplate from './dashboardSummary.html';
-
-var oneMonthAgo = moment().subtract(1, 'months').toDate();
-
-var has_seen_alert = false;
-
-function dashboardSummary(Restangular, $state, notification) {
+function approveReview(Restangular, $state, notification) {
     'use strict';
 
     return {
@@ -39,6 +32,6 @@ function dashboardSummary(Restangular, $state, notification) {
     };
 }
 
-dashboardSummary.$inject = ['Restangular', '$state', 'notification'];
+approveReview.$inject = ['Restangular', '$state', 'notification'];
 
-export default dashboardSummary;
+export default approveReview;

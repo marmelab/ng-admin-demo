@@ -15,10 +15,10 @@ myApp.config(['NgAdminConfigurationProvider', 'FieldViewConfigurationProvider', 
 }]);
 
 // custom directives
-myApp.directive('approveReview', require('./directives/approveReview'));
-myApp.directive('starRating', require('./directives/starRating'));
-myApp.directive('basket', require('./directives/basket'));
-myApp.directive('dashboardSummary', require('./directives/dashboardSummary'));
+myApp.directive('approveReview', require('./reviews/approveReview'));
+myApp.directive('starRating', require('./reviews/starRating'));
+myApp.directive('basket', require('./commands/basket'));
+myApp.directive('dashboardSummary', require('./dashboard/dashboardSummary'));
 
 // custom controllers
 myApp.controller('username', ['$scope', '$window', function($scope, $window) { // used in header.html
@@ -26,7 +26,7 @@ myApp.controller('username', ['$scope', '$window', function($scope, $window) { /
 }])
 
 // custom states (pages)
-myApp.config(['$stateProvider', require('./states/segments')]);
+myApp.config(['$stateProvider', require('./segments/segmentsState')]);
 
 myApp.config(['NgAdminConfigurationProvider', function (nga) {
     // create the admin application
@@ -41,13 +41,13 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
     admin.addEntity(nga.entity('commands'));
 
     // configure entities
-    require('./entities/customers')(nga, admin);
-    require('./entities/categories')(nga, admin);
-    require('./entities/products')(nga, admin);
-    require('./entities/reviews')(nga, admin);
-    require('./entities/commands')(nga, admin);
+    require('./customers/config')(nga, admin);
+    require('./categories/config')(nga, admin);
+    require('./products/config')(nga, admin);
+    require('./reviews/config')(nga, admin);
+    require('./commands/config')(nga, admin);
 
-    admin.dashboard(require('./dashboard')(nga, admin));
+    admin.dashboard(require('./dashboard/config')(nga, admin));
     admin.header(require('./header.html'));
     admin.menu(require('./menu')(nga, admin));
 

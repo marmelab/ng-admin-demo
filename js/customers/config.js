@@ -1,7 +1,7 @@
 var moment = require('moment');
 var fromNow = v => moment(v).fromNow();
 
-var segments = require('../utils/segments').choices;
+var segments = require('../segments/segments').choices;
 
 export default function (nga, admin) {
 
@@ -11,7 +11,7 @@ export default function (nga, admin) {
         .fields([
             nga.field('avatar', 'template')
                 .label('')
-                .template('<img src="{{ entry.values.avatar }}" width="25" />'),
+                .template('<img src="{{ entry.values.avatar }}" width="25" style="margin-top:-5px" />'),
             nga.field('last_name', 'template') // use last_name for sorting
                 .label('Name')
                 .isDetailLink(true)
