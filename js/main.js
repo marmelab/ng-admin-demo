@@ -16,6 +16,7 @@ myApp.config(['NgAdminConfigurationProvider', 'FieldViewConfigurationProvider', 
 
 // custom directives
 myApp.directive('approveReview', require('./reviews/approveReview'));
+myApp.directive('batchApprove', require('./reviews/batchApprove'));
 myApp.directive('starRating', require('./reviews/starRating'));
 myApp.directive('basket', require('./commands/basket'));
 myApp.directive('dashboardSummary', require('./dashboard/dashboardSummary'));

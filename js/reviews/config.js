@@ -63,6 +63,11 @@ export default function (nga, admin) {
         .listActions([
             '<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>',
             '<approve-review size="xs" review="entry"></approve-review>',
+        ])
+        .batchActions([
+            '<batch-approve type="accept" selection="selection"></batch-approve>',
+            '<batch-approve type="reject" selection="selection"></batch-approve>',
+            'delete'
         ]);
 
     reviews.editionView()

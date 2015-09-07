@@ -14,19 +14,19 @@ function approveReview(Restangular, $state, notification) {
                 Restangular
                     .one('reviews', scope.review.values.id).get()
                     .then(review => {
-                        review.data.status = status ? 'accepted' : 'rejected';
+                        review.data.status = status;
                         return review.data.put();
                     })
-                    .then(() => notification.log('Review updated', { addnCls: 'humane-flatty-success' }) )
+                    .then(() => $state.reload())
+                    .then(() => notification.log('Review ' + status, { addnCls: 'humane-flatty-success' }) )
                     .catch(e => notification.log('A problem occurred, please try again', { addnCls: 'humane-flatty-error' }) && console.error(e) )
-                    .finally(() => $state.go($state.current.name, $state.params, { reload: true }))
             }
         },
         template:
-` <a ng-if="review.values.status == 'pending'" class="btn btn-success" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve(true)">
+` <a ng-if="review.values.status == 'pending'" class="btn btn-success" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve('accepted')">
     <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;Accept
 </a>
-<a ng-if="review.values.status == 'pending'" class="btn btn-danger" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve(false)">
+<a ng-if="review.values.status == 'pending'" class="btn btn-danger" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve('rejected')">
     <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbspReject
 </a>`
     };
