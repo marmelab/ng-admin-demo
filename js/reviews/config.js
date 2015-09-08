@@ -12,11 +12,13 @@ export default function (nga, admin) {
             nga.field('customer_id', 'reference')
                 .label('Customer')
                 .targetEntity(admin.getEntity('customers'))
-                .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
+                .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                .cssClasses('hidden-xs'),
             nga.field('product_id', 'reference')
                 .label('Product')
                 .targetEntity(admin.getEntity('products'))
-                .targetField(nga.field('reference')),
+                .targetField(nga.field('reference'))
+                .cssClasses('hidden-xs'),
             nga.field('rating', 'template')
                 .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
             nga.field('comment')
@@ -25,7 +27,8 @@ export default function (nga, admin) {
                         return '';
                     }
                     return value.length > 50 ? value.substr(0, 50) + '...' : value;
-                }),
+                })
+                .cssClasses('hidden-xs'),
             nga.field('status', 'choice')
                 .choices(statusChoices)
                 .cssClasses(function(entry) { // add custom CSS classes to inputs and columns

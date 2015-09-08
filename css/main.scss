@@ -9,40 +9,16 @@
     padding-top: 15px;
 }
 
-@media(min-width:768px) {
-    .number, .table-condensed>tbody>tr>td.number {
-        padding-right: 2em;
-    }
-    .table-condensed>thead>tr>th {
-        &.ng-admin-column-price, &.ng-admin-column-width, &.ng-admin-column-height, &.ng-admin-column-total, &.ng-admin-column-stock {
-                padding-right: 2em;
-        }
-    }
-}
-
-.number, .table-condensed>tbody>tr>td.number {
-    text-align: right;
-}
-
-.table-condensed>thead>tr>th {
-    &.ng-admin-column-price, &.ng-admin-column-width, &.ng-admin-column-height, &.ng-admin-column-total, &.ng-admin-column-stock {
-            text-align: right;
-            width: 8%;
-    }
-}
-
 table.items > tbody > tr > td {
     vertical-align: middle;
+}
+
+.grid .ng-admin-type-amount, .grid .ng-admin-column-total_spent {
+    text-align: right;
+    padding-right: 1em;
 }
 
 // Basket
 .form-control.delivery_fees {
     padding-right: 0;
-}
-
-.table-condensed>thead>tr>th {
-    &.ng-admin-column-unit-price, &.ng-admin-column-item-total,  {
-        text-align: right;
-        padding-right: 2em;
-    }
 }

@@ -10,13 +10,16 @@ export default function (nga, admin) {
             nga.field('customer_id', 'reference')
                 .label('Customer')
                 .targetEntity(admin.getEntity('customers'))
-                .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
+                .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                .cssClasses('hidden-xs'),
             nga.field('nb_items')
-                .map((v,e) => e.basket.length),
+                .map((v,e) => e.basket.length)
+                .cssClasses('hidden-xs'),
             nga.field('total', 'amount')
-                .cssClasses('number'),
+                .cssClasses('hidden-xs'),
             nga.field('status'),
             nga.field('returned', 'boolean')
+                .cssClasses('hidden-xs')
         ])
         .filters([
             nga.field('q', 'template')

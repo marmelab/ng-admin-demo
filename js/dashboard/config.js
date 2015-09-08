@@ -20,12 +20,13 @@ export default function (nga, admin) {
             .name('pending_orders')
             .title('Pending orders')
             .fields([
-                nga.field('date', 'datetime'),
-                nga.field('reference').isDetailLink(true),
+                nga.field('date', 'datetime').isDetailLink(true),
+                nga.field('reference'),
                 nga.field('customer_id', 'reference')
                     .label('Customer')
                     .targetEntity(admin.getEntity('customers'))
-                    .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
+                    .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                    .cssClasses('hidden-xs'),
                 nga.field('nb_items')
                     .map((v,e) => e.basket.length),
                 nga.field('total', 'amount')

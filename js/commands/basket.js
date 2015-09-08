@@ -38,43 +38,43 @@ function basket(Restangular, $q) {
             }, true);
         },
         template: `
-<table class="table table-condensed img-thumbnail items">
+<table class="grid table table-condensed img-thumbnail items">
 <thead>
 <tr>
     <th class="col-md-1"></th>
     <th class="col-md-3">Reference</th>
-    <th class="col-md-2 ng-admin-column-unit-price">Price</th>
+    <th class="col-md-2 ng-admin-type-amount">Unit Price</th>
     <th class="col-md-3">Quantity</th>
-    <th class="col-md-3 ng-admin-column-item-total">Total</th>
+    <th class="col-md-3 ng-admin-type-amount">Total</th>
 </tr>
 </thead>
 <tbody>
 <tr ng-repeat="item in command.basket">
     <td><img src="{{ productsById[item.product_id].thumbnail }}" class="poster_mini_thumbnail" /></td>
     <td><a ui-sref="edit({entity: 'products', id: item.product_id })"> {{ productsById[item.product_id].reference }}</a></td>
-    <td class="number">\${{ productsById[item.product_id].price }}</td>
+    <td class="ng-admin-type-amount">\${{ productsById[item.product_id].price }}</td>
     <td><input class="form-control input-sm" type="number" min="0" ng-model="item.quantity"/></td>
-    <td class="number">\${{ productsById[item.product_id].price * item.quantity | number: 2 }}</td>
+    <td class="ng-admin-type-amount">\${{ productsById[item.product_id].price * item.quantity | number: 2 }}</td>
 </td>
 <tr>
     <td colspan="3"></td>
     <td>Sum</td>
-    <td class="number">\${{ command.total_ex_taxes }}</td>
+    <td class="ng-admin-type-amount">\${{ command.total_ex_taxes }}</td>
 </tr>
 <tr>
     <td colspan="3"></td>
     <td>Delivery</td>
-    <td class="number"><div class="input-group"><span class="input-group-addon ng-binding">$</span><input class="form-control delivery_fees input-sm" type="number" min="0" step="any" ng-model="command.delivery_fees"/></div></td>
+    <td class="ng-admin-type-amount"><div class="input-group"><span class="input-group-addon ng-binding">$</span><input class="form-control delivery_fees input-sm" type="number" min="0" step="any" ng-model="command.delivery_fees"/></div></td>
 </tr>
 <tr>
     <td colspan="3"></td>
     <td>Tax rate</td>
-    <td class="number">{{ command.tax_rate * 100}}%</td>
+    <td class="ng-admin-type-number">{{ command.tax_rate * 100}}%</td>
 </tr>
 <tr>
     <td colspan="3"></td>
     <td><strong>Total</strong></td>
-    <td class="number"><strong>\${{ command.total }}</strong></td>
+    <td class="ng-admin-type-amount"><strong>\${{ command.total }}</strong></td>
 </tr>
 </tbody>
 </table>

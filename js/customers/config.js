@@ -17,17 +17,23 @@ export default function (nga, admin) {
                 .isDetailLink(true)
                 .template('{{ entry.values.first_name }} {{ entry.values.last_name }}'),
             nga.field('last_seen', 'datetime')
-                .map(fromNow),
+                .map(fromNow)
+                .cssClasses('hidden-xs'),
             nga.field('nb_commands', 'template')
                 .label('Commands')
-                .template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}'),
+                .template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}')
+                .cssClasses('hidden-xs'),
             nga.field('total_spent', 'template')
-                .template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>'),
-            nga.field('latest_purchase', 'datetime'),
+                .template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>')
+                .cssClasses('hidden-xs text-right'),
+            nga.field('latest_purchase', 'datetime')
+                .cssClasses('hidden-xs'),
             nga.field('has_newsletter', 'boolean')
-                .label('Newsletter'),
+                .label('Newsletter')
+                .cssClasses('hidden-xs'),
             nga.field('segments', 'template')
-                .template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>'),
+                .template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>')
+                .cssClasses('hidden-xs'),
         ])
         .filters([
             nga.field('q', 'template')

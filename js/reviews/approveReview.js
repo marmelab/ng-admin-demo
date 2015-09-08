@@ -23,10 +23,10 @@ function approveReview(Restangular, $state, notification) {
             }
         },
         template:
-` <a ng-if="review.values.status == 'pending'" class="btn btn-success" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve('accepted')">
+` <a ng-if="review.values.status == 'pending'" class="btn btn-outline btn-success" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve('accepted')">
     <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;Accept
 </a>
-<a ng-if="review.values.status == 'pending'" class="btn btn-danger" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve('rejected')">
+<a ng-if="review.values.status == 'pending'" class="btn btn-outline btn-danger" ng-class="size ? \'btn-\' + size : \'\'" ng-click="approve('rejected')">
     <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>&nbspReject
 </a>`
     };
