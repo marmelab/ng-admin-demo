@@ -16,19 +16,20 @@ export default function (nga, admin) {
                 .template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'),
             nga.field('reference').isDetailLink(true),
             nga.field('price', 'amount')
-                .cssClasses('number'),
+                .cssClasses('hidden-xs'),
             nga.field('width', 'float')
                 .format('0.00')
-                .cssClasses('number'),
+                .cssClasses('hidden-xs'),
             nga.field('height', 'float')
                 .format('0.00')
-                .cssClasses('number'),
+                .cssClasses('hidden-xs'),
             nga.field('category_id', 'reference')
                 .label('Category')
                 .targetEntity(admin.getEntity('categories'))
-                .targetField(nga.field('name')),
+                .targetField(nga.field('name'))
+                .cssClasses('hidden-xs'),
             nga.field('stock', 'number')
-                .cssClasses('number'),
+                .cssClasses('hidden-xs'),
         ])
         .filters([
             nga.field('q', 'template')
@@ -74,6 +75,7 @@ export default function (nga, admin) {
             nga.field('image')
                 .validation({required: true })
                 .cssClasses('col-sm-4'),
+            nga.field('description', 'wysiwyg')
         ]);
     products.editionView()
         .template(productsEditionTemplate)
