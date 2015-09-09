@@ -62,6 +62,10 @@ export default function (nga, admin) {
                 .remoteComplete(true, {
                     searchQuery: function(search) { return { q: search }; }
                 }),
+            nga.field('date_gte', 'datetime')
+                .label('Posted since'),
+            nga.field('date_lte', 'datetime')
+                .label('Posted before')
         ])
         .listActions([
             '<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>',

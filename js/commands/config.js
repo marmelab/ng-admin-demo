@@ -39,6 +39,12 @@ export default function (nga, admin) {
                     { label: 'delivered', value: 'delivered' },
                     { label: 'cancelled', value: 'cancelled' }
                 ]),
+            nga.field('date_gte', 'datetime')
+                .label('Passed after'),
+            nga.field('date_lte', 'datetime')
+                .label('Passed before'),
+            nga.field('total_gte', 'amount')
+                .label('Min amount'),
             nga.field('returned', 'boolean')
         ])
         .listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>']);

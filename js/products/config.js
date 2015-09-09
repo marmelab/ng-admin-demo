@@ -40,9 +40,17 @@ export default function (nga, admin) {
                 .label('Category')
                 .targetEntity(admin.getEntity('categories'))
                 .targetField(nga.field('name')),
-            nga.field('stock', 'template')
-                .label('Out of stock')
-                .defaultValue(0)
+            nga.field('width_gte', 'number')
+                .label('Min width'),
+            nga.field('width_lte', 'number')
+                .label('Max width'),
+            nga.field('height_gte', 'number')
+                .label('Min height'),
+            nga.field('height_lte', 'number')
+                .label('Max height'),
+            nga.field('stock_lte', 'template')
+                .label('Low stock')
+                .defaultValue(10)
         ])
         .listActions(['edit', 'delete']);
     products.creationView()

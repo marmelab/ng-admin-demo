@@ -20,10 +20,9 @@ function dashboardSummary(Restangular) {
             };
             Restangular
                 .all('commands')
-                .getList({range: '[1,100]', sort: '["date","DESC"]'})
+                .getList({filter: '{"date_gte":"' + oneMonthAgo.toISOString() +'"}', sort: '["date","DESC"]'})
                 .then(commands => {
                     $scope.stats.commands = commands.data
-                        .filter(command => new Date(command.date) > oneMonthAgo)
                         .reduce((stats, command) => {
                             if (command.status != 'cancelled') stats.revenue += command.total;
                             if (command.status == 'ordered') stats.pending_orders++;
@@ -32,11 +31,9 @@ function dashboardSummary(Restangular) {
                 });
             Restangular
                 .all('customers')
-                .getList({range: '[1,100]', sort: '["first_seen","DESC"]', filter: '{"has_ordered":true}'})
+                .getList({range: '[1,100]', sort: '["first_seen","DESC"]', filter: '{"has_ordered":true,"first_seen_gte":"' +oneMonthAgo.toISOString() + '"}'})
                 .then(customers => {
-                    $scope.stats.customers = customers.data
-                        .filter(customer => new Date(customer.first_seen) > oneMonthAgo)
-                        .reduce(nb => ++nb, 0)
+                    $scope.stats.customers = customers.data.reduce(nb => ++nb, 0)
                 });
             Restangular
                 .all('reviews')

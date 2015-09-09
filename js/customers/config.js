@@ -43,6 +43,8 @@ export default function (nga, admin) {
             nga.field('groups', 'choice')
                 .label('Segment')
                 .choices(segments),
+            nga.field('last_seen_gte', 'datetime')
+                .label('Visited since'),
             nga.field('has_ordered', 'boolean'),
             nga.field('has_newsletter', 'boolean'),
         ])
