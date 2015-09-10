@@ -19,13 +19,11 @@ export default function (nga, admin) {
             nga.field('last_seen', 'datetime')
                 .map(fromNow)
                 .cssClasses('hidden-xs'),
-            nga.field('nb_commands', 'template')
+            nga.field('nb_commands', 'number')
                 .label('Commands')
-                .template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}')
-                .cssClasses('hidden-xs'),
-            nga.field('total_spent', 'template')
-                .template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>')
-                .cssClasses('hidden-xs text-right'),
+                .cssClasses(entry => entry.values.nb_commands ? 'hidden-xs' : 'transparent hidden-xs'),
+            nga.field('total_spent', 'amount')
+                .cssClasses(entry => entry.values.total_spent ? 'hidden-xs' : 'transparent hidden-xs'),
             nga.field('latest_purchase', 'datetime')
                 .cssClasses('hidden-xs'),
             nga.field('has_newsletter', 'boolean')

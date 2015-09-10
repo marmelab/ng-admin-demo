@@ -40,7 +40,7 @@ export default function (nga, admin) {
                     { label: 'cancelled', value: 'cancelled' }
                 ]),
             nga.field('date_gte', 'datetime')
-                .label('Passed after'),
+                .label('Passed since'),
             nga.field('date_lte', 'datetime')
                 .label('Passed before'),
             nga.field('total_gte', 'amount')
