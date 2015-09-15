@@ -4,7 +4,7 @@ install:
 	@npm install
 
 build: copy-ng-admin
-	@./node_modules/.bin/webpack  --progress --colors --devtool source-map
+	@./node_modules/.bin/webpack --optimize-minimize --progress --colors --devtool source-map
 
 copy-ng-admin:
 	@cp ./node_modules/ng-admin/build/ng-admin.min.js build/
