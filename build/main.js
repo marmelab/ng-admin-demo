@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(1);
-	module.exports = __webpack_require__(131);
+	module.exports = __webpack_require__(136);
 
 
 /***/ },
@@ -86,30 +86,50 @@
 	// custom states (pages)
 	myApp.config(['$stateProvider', __webpack_require__(119)]);
 	
-	myApp.config(['NgAdminConfigurationProvider', function (nga) {
+	myApp.config(['NgAdminConfigurationProvider', '$windowProvider', function (nga, $window) {
 	    // create the admin application
 	    var admin = nga.application('My First Admin').baseApiUrl('/');
 	
-	    // add entities
-	    admin.addEntity(nga.entity('customers'));
-	    admin.addEntity(nga.entity('categories'));
-	    admin.addEntity(nga.entity('products'));
-	    admin.addEntity(nga.entity('reviews'));
-	    admin.addEntity(nga.entity('commands'));
+	    if ($window.$get().localStorage.getItem('posters_galore_login') == 'admin') {
+	        //retrieving current role
+	        // add entities
+	        admin.addEntity(nga.entity('customers'));
+	        admin.addEntity(nga.entity('categories'));
+	        admin.addEntity(nga.entity('products'));
+	        admin.addEntity(nga.entity('reviews'));
+	        admin.addEntity(nga.entity('commands'));
 	
-	    // configure entities
-	    __webpack_require__(122)(nga, admin);
-	    __webpack_require__(123)(nga, admin);
-	    __webpack_require__(124)(nga, admin);
-	    __webpack_require__(126)(nga, admin);
-	    __webpack_require__(127)(nga, admin);
+	        // configure entities
+	        __webpack_require__(122)(nga, admin);
+	        __webpack_require__(123)(nga, admin);
+	        __webpack_require__(124)(nga, admin);
+	        __webpack_require__(126)(nga, admin);
+	        __webpack_require__(127)(nga, admin);
 	
-	    admin.dashboard(__webpack_require__(128)(nga, admin));
-	    admin.header(__webpack_require__(129));
-	    admin.menu(__webpack_require__(130)(nga, admin));
+	        admin.dashboard(__webpack_require__(128)(nga, admin));
+	        admin.header(__webpack_require__(129));
+	        admin.menu(__webpack_require__(130)(nga, admin));
 	
-	    // attach the admin application to the DOM and execute it
-	    nga.configure(admin);
+	        // attach the admin application to the DOM and execute it
+	        nga.configure(admin);
+	    } else {
+	        // add entities
+	        admin.addEntity(nga.entity('customers').readOnly());
+	        admin.addEntity(nga.entity('categories').readOnly());
+	        admin.addEntity(nga.entity('products').readOnly());
+	
+	        // configure entities
+	        __webpack_require__(131)(nga, admin);
+	        __webpack_require__(132)(nga, admin);
+	        __webpack_require__(133)(nga, admin);
+	
+	        admin.dashboard(__webpack_require__(134)(nga, admin, $window.$get()));
+	        admin.header(__webpack_require__(129));
+	        admin.menu(__webpack_require__(135)(nga, admin));
+	
+	        // attach the admin application to the DOM and execute it
+	        nga.configure(admin);
+	    }
 	}]);
 
 /***/ },
@@ -2574,7 +2594,9 @@
 	        currentQueue = queue;
 	        queue = [];
 	        while (++queueIndex < len) {
-	            currentQueue[queueIndex].run();
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
 	        }
 	        queueIndex = -1;
 	        len = queue.length;
@@ -2626,7 +2648,6 @@
 	    throw new Error('process.binding is not supported');
 	};
 	
-	// TODO(shtylman)
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
@@ -4004,7 +4025,7 @@
 	
 	var has_seen_alert = false;
 	
-	function dashboardSummary(Restangular) {
+	function dashboardSummary(Restangular, $window) {
 	    'use strict';
 	
 	    return {
@@ -4013,24 +4034,27 @@
 	        controller: function controller($scope) {
 	            $scope.stats = {};
 	            $scope.has_seen_alert = has_seen_alert;
+	            $scope.isAdmin = $window.localStorage.getItem('posters_galore_login') == 'admin';
 	            $scope.dismissAlert = function () {
 	                has_seen_alert = true;
 	                $scope.has_seen_alert = true;
 	            };
-	            Restangular.all('commands').getList({ filter: '{"date_gte":"' + oneMonthAgo.toISOString() + '"}', sort: '["date","DESC"]' }).then(function (commands) {
-	                $scope.stats.commands = commands.data.reduce(function (stats, command) {
-	                    if (command.status != 'cancelled') stats.revenue += command.total;
-	                    if (command.status == 'ordered') stats.pending_orders++;
-	                    return stats;
-	                }, { revenue: 0, pending_orders: 0 });
-	            });
+	            if ($scope.isAdmin) {
+	                Restangular.all('commands').getList({ filter: '{"date_gte":"' + oneMonthAgo.toISOString() + '"}', sort: '["date","DESC"]' }).then(function (commands) {
+	                    $scope.stats.commands = commands.data.reduce(function (stats, command) {
+	                        if (command.status != 'cancelled') stats.revenue += command.total;
+	                        if (command.status == 'ordered') stats.pending_orders++;
+	                        return stats;
+	                    }, { revenue: 0, pending_orders: 0 });
+	                });
+	                Restangular.all('reviews').getList({ range: '[1,100]', sort: '["date","DESC"]', filter: '{"status":"pending"}' }).then(function (reviews) {
+	                    $scope.stats.reviews = reviews.data.reduce(function (nb) {
+	                        return ++nb;
+	                    }, 0);
+	                });
+	            }
 	            Restangular.all('customers').getList({ range: '[1,100]', sort: '["first_seen","DESC"]', filter: '{"has_ordered":true,"first_seen_gte":"' + oneMonthAgo.toISOString() + '"}' }).then(function (customers) {
 	                $scope.stats.customers = customers.data.reduce(function (nb) {
-	                    return ++nb;
-	                }, 0);
-	            });
-	            Restangular.all('reviews').getList({ range: '[1,100]', sort: '["date","DESC"]', filter: '{"status":"pending"}' }).then(function (reviews) {
-	                $scope.stats.reviews = reviews.data.reduce(function (nb) {
 	                    return ++nb;
 	                }, 0);
 	            });
@@ -4039,7 +4063,7 @@
 	    };
 	}
 	
-	dashboardSummary.$inject = ['Restangular'];
+	dashboardSummary.$inject = ['Restangular', '$window'];
 	
 	exports['default'] = dashboardSummary;
 	module.exports = exports['default'];
@@ -15508,7 +15532,7 @@
 /* 118 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"row\">\n    <div class=\"col-lg-12\">\n        <alert type=\"info\" close=\"dismissAlert()\" ng-show=\"!has_seen_alert\">\n            Welcome to the <a href=\"https://github.com/marmelab/ng-admin\">ng-admin</a> demo! Fell free to explore and modify the data - it's local to your computer, and will reset each time you reload.\n        </alert>\n    </div>\n</div>\n<div class=\"row\">\n    <div class=\"col-lg-3\">\n        <div class=\"panel panel-primary\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-usd fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.commands.revenue | number:0 }}</div>\n                        <div>Monthly revenue</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'commands'})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n\n        </div>\n    </div>\n    <div class=\"col-lg-3\">\n        <div class=\"panel panel-green\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-shopping-cart fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.commands.pending_orders }}</div>\n                        <div>Pending orders</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'commands',search:{status:'ordered'}})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n    <div class=\"col-lg-3\">\n        <div class=\"panel panel-yellow\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-comments fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.reviews }}</div>\n                        <div>Pending reviews</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'reviews', search:{status:'pending'}})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n    <div class=\"col-lg-3\">\n        <div class=\"panel panel-red\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-user-plus fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.customers }}</div>\n                        <div>New customers</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'customers',search:{has_ordered:true}})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n";
+	module.exports = "<div class=\"row\">\n    <div class=\"col-lg-12\">\n        <alert type=\"info\" close=\"dismissAlert()\" ng-show=\"!has_seen_alert\">\n            Welcome to the <a href=\"https://github.com/marmelab/ng-admin\">ng-admin</a> demo! Fell free to explore and modify the data - it's local to your computer, and will reset each time you reload.\n        </alert>\n    </div>\n</div>\n<div class=\"row\">\n    <div class=\"col-lg-3\" ng-show=\"{{ isAdmin }}\">\n        <div class=\"panel panel-primary\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-usd fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.commands.revenue | number:0 }}</div>\n                        <div>Monthly revenue</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'commands'})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n\n        </div>\n    </div>\n\n\n    <div class=\"col-lg-3\" ng-show=\"{{ isAdmin }}\">\n        <div class=\"panel panel-green\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-shopping-cart fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.commands.pending_orders }}</div>\n                        <div>Pending orders</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'commands',search:{status:'ordered'}})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n\n    <div class=\"col-lg-3\" ng-show=\"{{ isAdmin }}\">\n        <div class=\"panel panel-yellow\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-comments fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.reviews }}</div>\n                        <div>Pending reviews</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'reviews', search:{status:'pending'}})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n\n\n    <div class=\"col-lg-3\">\n        <div class=\"panel panel-red\">\n            <div class=\"panel-heading\">\n                <div class=\"row\">\n                    <div class=\"col-xs-3\">\n                        <i class=\"fa fa-user-plus fa-5x\"></i>\n                    </div>\n                    <div class=\"col-xs-9 text-right\">\n                        <div class=\"huge\">{{ stats.customers }}</div>\n                        <div>New customers</div>\n                    </div>\n                </div>\n            </div>\n            <a ui-sref=\"list({entity:'customers',search:{has_ordered:true}})\">\n                <div class=\"panel-footer\">\n                    <span class=\"pull-left\">View Details</span>\n                    <span class=\"pull-right\"><i class=\"fa fa-arrow-circle-right\"></i></span>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n";
 
 /***/ },
 /* 119 */
@@ -15590,11 +15614,7 @@
 	
 	    var customer = admin.getEntity('customers');
 	    customer.listView().title('Visitors').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" style="margin-top:-5px" />'), nga.field('last_name', 'template') // use last_name for sorting
-	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow).cssClasses('hidden-xs'), nga.field('nb_commands', 'number').label('Commands').cssClasses(function (entry) {
-	        return entry.values.nb_commands ? 'hidden-xs' : 'transparent hidden-xs';
-	    }), nga.field('total_spent', 'amount').cssClasses(function (entry) {
-	        return entry.values.total_spent ? 'hidden-xs' : 'transparent hidden-xs';
-	    }), nga.field('latest_purchase', 'datetime').cssClasses('hidden-xs'), nga.field('has_newsletter', 'boolean').label('Newsletter').cssClasses('hidden-xs'), nga.field('segments', 'template').template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('groups', 'choice').label('Segment').choices(segments), nga.field('last_seen_gte', 'datetime').label('Visited since'), nga.field('has_ordered', 'boolean'), nga.field('has_newsletter', 'boolean')]).sortField('first_seen').sortDir('DESC').listActions(['edit']);
+	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow).cssClasses('hidden-xs'), nga.field('nb_commands', 'template').label('Commands').template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}').cssClasses('hidden-xs'), nga.field('total_spent', 'template').template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>').cssClasses('hidden-xs text-right'), nga.field('latest_purchase', 'datetime').cssClasses('hidden-xs'), nga.field('has_newsletter', 'boolean').label('Newsletter').cssClasses('hidden-xs'), nga.field('segments', 'template').template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('groups', 'choice').label('Segment').choices(segments), nga.field('last_seen_gte', 'datetime').label('Visited since'), nga.field('has_ordered', 'boolean'), nga.field('has_newsletter', 'boolean')]).sortField('first_seen').sortDir('DESC').listActions(['edit']);
 	    customer.editionView().title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details').fields([nga.field('first_name'), nga.field('last_name'), nga.field('email', 'email'), nga.field('address', 'text'), nga.field('zipcode'), nga.field('city'), nga.field('birthday', 'date'), nga.field('first_seen', 'datetime').editable(false), nga.field('latest_purchase', 'datetime').editable(false), nga.field('last_seen', 'datetime').editable(false), nga.field('has_newsletter', 'boolean'), nga.field('groups', 'choices').choices(segments), nga.field('commands', 'referenced_list').label('Latest commands').targetEntity(admin.getEntity('commands')).targetReferenceField('customer_id').targetFields([nga.field('date').map(fromNow), nga.field('reference').isDetailLink(true), nga.field('nb_items').map(function (v, e) {
 	        return e.basket.length;
 	    }), nga.field('total', 'amount'), nga.field('status')]).perPage(5).sortField('date').sortDir('DESC'), nga.field('commands button', 'template').label('').template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'), nga.field('reviews', 'referenced_list').label('Latest reviews').targetEntity(admin.getEntity('reviews')).targetReferenceField('customer_id').targetFields([nga.field('date').label('Posted').map(fromNow).isDetailLink(true), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'), nga.field('comment').map(function truncate(value) {
@@ -15765,7 +15785,7 @@
 	        searchQuery: function searchQuery(search) {
 	            return { q: search };
 	        }
-	    }), nga.field('status', 'choice').choices([{ label: 'ordered', value: 'ordered' }, { label: 'delivered', value: 'delivered' }, { label: 'cancelled', value: 'cancelled' }]), nga.field('date_gte', 'datetime').label('Passed since'), nga.field('date_lte', 'datetime').label('Passed before'), nga.field('total_gte', 'amount').label('Min amount'), nga.field('returned', 'boolean')]).listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>']);
+	    }), nga.field('status', 'choice').choices([{ label: 'ordered', value: 'ordered' }, { label: 'delivered', value: 'delivered' }, { label: 'cancelled', value: 'cancelled' }]), nga.field('date_gte', 'datetime').label('Passed after'), nga.field('date_lte', 'datetime').label('Passed before'), nga.field('total_gte', 'amount').label('Min amount'), nga.field('returned', 'boolean')]).listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>']);
 	    commands.editionView().title('Command #{{ entry.values.reference }}').fields([nga.field('date', 'datetime').editable(false), nga.field('customer_id', 'reference').label('Customer').targetEntity(admin.getEntity('customers')).targetField(nga.field('last_name').map(function (v, e) {
 	        return e.first_name + ' ' + e.last_name;
 	    })).editable(false), nga.field('Items', 'template').template('<basket command="entry.values"></basket>'), nga.field('status', 'choice').choices([{ label: 'ordered', value: 'ordered' }, { label: 'delivered', value: 'delivered' }, { label: 'cancelled', value: 'cancelled' }]).cssClasses('col-sm-4 col-lg-2'), nga.field('returned', 'boolean')]);
@@ -15841,6 +15861,141 @@
 
 /***/ },
 /* 131 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	var moment = __webpack_require__(30);
+	var fromNow = function fromNow(v) {
+	    return moment(v).fromNow();
+	};
+	
+	var segments = __webpack_require__(121).choices;
+	
+	exports['default'] = function (nga, admin) {
+	
+	    var customer = admin.getEntity('customers');
+	    customer.listView().title('Visitors').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" style="margin-top:-5px" />'), nga.field('last_name', 'template') // use last_name for sorting
+	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow).cssClasses('hidden-xs'), nga.field('nb_commands', 'template').label('Commands').template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}').cssClasses('hidden-xs'), nga.field('total_spent', 'template').template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>').cssClasses('hidden-xs text-right'), nga.field('latest_purchase', 'datetime').cssClasses('hidden-xs'), nga.field('has_newsletter', 'boolean').label('Newsletter').cssClasses('hidden-xs'), nga.field('segments', 'template').template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('groups', 'choice').label('Segment').choices(segments), nga.field('last_seen_gte', 'datetime').label('Visited since'), nga.field('has_ordered', 'boolean'), nga.field('has_newsletter', 'boolean')]).sortField('first_seen').sortDir('DESC').batchActions([]).listActions();
+	
+	    return customer;
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 132 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	exports['default'] = function (nga, admin) {
+	
+	    var categories = admin.getEntity('categories');
+	    categories.listView().fields([nga.field('name')]).batchActions([]).listActions();
+	    return categories;
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 133 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var _moment = __webpack_require__(30);
+	
+	var _moment2 = _interopRequireDefault(_moment);
+	
+	var _productsEditionTemplateHtml = __webpack_require__(125);
+	
+	var _productsEditionTemplateHtml2 = _interopRequireDefault(_productsEditionTemplateHtml);
+	
+	var fromNow = function fromNow(v) {
+	    return (0, _moment2['default'])(v).fromNow();
+	};
+	
+	exports['default'] = function (nga, admin) {
+	
+	    var products = admin.getEntity('products').label('Posters');
+	    products.listView().title('All Posters').fields([nga.field('i', 'template').isDetailLink(true).label('').template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'), nga.field('reference').isDetailLink(true), nga.field('price', 'amount').cssClasses('hidden-xs'), nga.field('width', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('height', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')).cssClasses('hidden-xs'), nga.field('stock', 'number').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')), nga.field('width_gte', 'number').label('Min width'), nga.field('width_lte', 'number').label('Max width'), nga.field('height_gte', 'number').label('Min height'), nga.field('height_lte', 'number').label('Max height'), nga.field('stock_lte', 'template').label('Low stock').defaultValue(10)]).batchActions([]).listActions();
+	
+	    return products;
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 134 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	var moment = __webpack_require__(30);
+	var fromNow = function fromNow(v) {
+	    return moment(v).fromNow();
+	};
+	
+	exports['default'] = function (nga, admin, $window) {
+	
+	    var dashboard = nga.dashboard().addCollection(nga.collection(admin.getEntity('customers')).name('new_customers').title('New customers').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" />'), nga.field('last_name', 'template') // use last_name for sorting
+	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow)]).permanentFilters({ has_ordered: true }).sortField('first_seen').sortDir('DESC').perPage(10));
+	
+	    if ($window.localStorage.getItem('posters_galore_login') == 'admin') {
+	        dashboard.template('\n                <div class="row dashboard-starter"></div>\n                <dashboard-summary></dashboard-summary>\n                <div class="row dashboard-content">\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.pending_orders" entries="dashboardController.entries.pending_orders"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.latest_reviews" entries="dashboardController.entries.latest_reviews"></ma-dashboard-panel>\n                        </div>\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                </div>\n            ');
+	    } else {
+	        dashboard.template('\n                <div class="row dashboard-starter"></div>\n                <dashboard-summary></dashboard-summary>\n                <div class="row dashboard-content">\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                </div>\n            ');
+	    }
+	    return dashboard;
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 135 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	exports['default'] = function (nga, admin) {
+	    return nga.menu().addChild(nga.menu().title('Visitors').icon('<span class="fa fa-users fa-fw"></span>').active(function (path) {
+	        return path.indexOf('/customers') === 0;
+	    }) // active() is the function that determines if the menu is active
+	    .addChild(nga.menu().title('Leads').link('/customers/list?search={"has_ordered":"false"}') // use the same entity list for several menu items
+	    .icon('<span class="fa fa-user-times fa-fw"></span>')) // no active() function => will never appear active
+	    .addChild(nga.menu().title('Customers').link('/customers/list?search={"has_ordered":"true"}') // use the same entity list for several menu items
+	    .icon('<span class="fa fa-user fa-fw"></span>')).addChild(nga.menu().title('Segments').link('/segments') // this state isn't handled by ng-admin - no problem
+	    .active(function (path) {
+	        return path == '/segments';
+	    }).icon('<span class="fa fa-scissors fa-fw"></span>'))).addChild(nga.menu().title('Catalog').icon('<span class="fa fa-th-list fa-fw"></span>').addChild(nga.menu(admin.getEntity('products')) // nga.menu(entity) sets defaults title, link and active values correctly
+	    .icon('<span class="fa fa-picture-o fa-fw"></span>')).addChild(nga.menu(admin.getEntity('categories')).icon('<span class="fa fa-tags fa-fw"></span>')));
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 136 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
