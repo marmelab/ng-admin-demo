@@ -98,6 +98,11 @@ export default function (nga, admin) {
                             .label('Posted')
                             .map(fromNow)
                             .isDetailLink(true),
+                        nga.field('customer_id', 'reference')
+                            .label('Customer')
+                            .targetEntity(admin.getEntity('customers'))
+                            .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                            .cssClasses('hidden-xs'),
                         nga.field('rating', 'template')
                             .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
                         nga.field('comment')

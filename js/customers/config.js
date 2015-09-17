@@ -21,9 +21,9 @@ export default function (nga, admin) {
                 .cssClasses('hidden-xs'),
             nga.field('nb_commands', 'number')
                 .label('Commands')
-                .cssClasses(entry => entry.values.nb_commands ? 'hidden-xs' : 'transparent hidden-xs'),
+                .cssClasses(entry => entry && entry.values.nb_commands ? 'hidden-xs' : 'transparent hidden-xs'),
             nga.field('total_spent', 'amount')
-                .cssClasses(entry => entry.values.total_spent ? 'hidden-xs' : 'transparent hidden-xs'),
+                .cssClasses(entry => entry && entry.values.total_spent ? 'hidden-xs' : 'transparent hidden-xs'),
             nga.field('latest_purchase', 'datetime')
                 .cssClasses('hidden-xs'),
             nga.field('has_newsletter', 'boolean')
@@ -97,6 +97,10 @@ export default function (nga, admin) {
                         .label('Posted')
                         .map(fromNow)
                         .isDetailLink(true),
+                    nga.field('product_id', 'reference')
+                        .label('Product')
+                        .targetEntity(admin.getEntity('products'))
+                        .targetField(nga.field('reference')),
                     nga.field('rating', 'template')
                         .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
                     nga.field('comment')
@@ -113,6 +117,7 @@ export default function (nga, admin) {
                             { label: 'pending', value: 'pending' }
                         ])
                         .cssClasses(function(entry) { // add custom CSS classes to inputs and columns
+                            if (!entry) return;
                             if (entry.values.status == 'accepted') {
                                 return 'text-center bg-success';
                             }
