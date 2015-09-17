@@ -113,6 +113,7 @@ export default function (nga, admin) {
                                 return value.length > 50 ? value.substr(0, 50) + '...' : value;
                             })
                     ])
+                    .listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>'])
                     .sortField('date')
                     .sortDir('DESC')
         );

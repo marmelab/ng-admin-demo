@@ -82,6 +82,7 @@ export default function (nga, admin) {
                     nga.field('total', 'amount'),
                     nga.field('status')
                 ])
+                .listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>'])
                 .perPage(5)
                 .sortField('date')
                 .sortDir('DESC'),
@@ -127,6 +128,7 @@ export default function (nga, admin) {
                             return 'text-center bg-warning';
                         }),
                 ])
+                .listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>'])
                 .perPage(5)
                 .sortField('date')
                 .sortDir('DESC'),

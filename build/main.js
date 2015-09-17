@@ -15597,7 +15597,7 @@
 	    }), nga.field('latest_purchase', 'datetime').cssClasses('hidden-xs'), nga.field('has_newsletter', 'boolean').label('Newsletter').cssClasses('hidden-xs'), nga.field('segments', 'template').template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('groups', 'choice').label('Segment').choices(segments), nga.field('last_seen_gte', 'datetime').label('Visited since'), nga.field('has_ordered', 'boolean'), nga.field('has_newsletter', 'boolean')]).sortField('first_seen').sortDir('DESC').listActions(['edit']);
 	    customer.editionView().title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details').fields([nga.field('first_name'), nga.field('last_name'), nga.field('email', 'email'), nga.field('address', 'text'), nga.field('zipcode'), nga.field('city'), nga.field('birthday', 'date'), nga.field('first_seen', 'datetime').editable(false), nga.field('latest_purchase', 'datetime').editable(false), nga.field('last_seen', 'datetime').editable(false), nga.field('has_newsletter', 'boolean'), nga.field('groups', 'choices').choices(segments), nga.field('commands', 'referenced_list').label('Latest commands').targetEntity(admin.getEntity('commands')).targetReferenceField('customer_id').targetFields([nga.field('date').map(fromNow), nga.field('reference').isDetailLink(true), nga.field('nb_items').map(function (v, e) {
 	        return e.basket.length;
-	    }), nga.field('total', 'amount'), nga.field('status')]).perPage(5).sortField('date').sortDir('DESC'), nga.field('commands button', 'template').label('').template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'), nga.field('reviews', 'referenced_list').label('Latest reviews').targetEntity(admin.getEntity('reviews')).targetReferenceField('customer_id').targetFields([nga.field('date').label('Posted').map(fromNow).isDetailLink(true), nga.field('product_id', 'reference').label('Product').targetEntity(admin.getEntity('products')).targetField(nga.field('reference')), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'), nga.field('comment').map(function truncate(value) {
+	    }), nga.field('total', 'amount'), nga.field('status')]).listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>']).perPage(5).sortField('date').sortDir('DESC'), nga.field('commands button', 'template').label('').template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'), nga.field('reviews', 'referenced_list').label('Latest reviews').targetEntity(admin.getEntity('reviews')).targetReferenceField('customer_id').targetFields([nga.field('date').label('Posted').map(fromNow).isDetailLink(true), nga.field('product_id', 'reference').label('Product').targetEntity(admin.getEntity('products')).targetField(nga.field('reference')), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'), nga.field('comment').map(function truncate(value) {
 	        if (!value) {
 	            return '';
 	        }
@@ -15612,7 +15612,7 @@
 	            return 'text-center bg-danger';
 	        }
 	        return 'text-center bg-warning';
-	    })]).perPage(5).sortField('date').sortDir('DESC'), nga.field('reviews button', 'template').label('').template('<ma-filtered-list-button entity-name="reviews" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>')]);
+	    })]).listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>']).perPage(5).sortField('date').sortDir('DESC'), nga.field('reviews button', 'template').label('').template('<ma-filtered-list-button entity-name="reviews" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>')]);
 	
 	    return customer;
 	};
@@ -15677,7 +15677,7 @@
 	            return '';
 	        }
 	        return value.length > 50 ? value.substr(0, 50) + '...' : value;
-	    })]).sortField('date').sortDir('DESC'));
+	    })]).listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>']).sortField('date').sortDir('DESC'));
 	
 	    return products;
 	};
