@@ -26,6 +26,7 @@ export default function (nga, admin) {
                     .label('Customer')
                     .targetEntity(admin.getEntity('customers'))
                     .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                    .singleApiCall(ids => ({ 'id': ids }))
                     .cssClasses('hidden-xs'),
                 nga.field('nb_items')
                     .map((v,e) => e.basket.length),
@@ -43,11 +44,13 @@ export default function (nga, admin) {
                 nga.field('customer_id', 'reference')
                     .label('Customer')
                     .targetEntity(admin.getEntity('customers'))
-                    .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name)),
+                    .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                    .singleApiCall(ids => ({ 'id': ids })),,
                 nga.field('product_id', 'reference')
                     .label('Product')
                     .targetEntity(admin.getEntity('products'))
-                    .targetField(nga.field('reference')),
+                    .targetField(nga.field('reference'))
+                    .singleApiCall(ids => ({ 'id': ids })),,
                 nga.field('rating', 'template')
                     .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
             ])

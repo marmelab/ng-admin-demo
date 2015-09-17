@@ -27,6 +27,7 @@ export default function (nga, admin) {
                 .label('Category')
                 .targetEntity(admin.getEntity('categories'))
                 .targetField(nga.field('name'))
+                .singleApiCall(ids => ({ 'id': ids }))
                 .cssClasses('hidden-xs'),
             nga.field('stock', 'number')
                 .cssClasses('hidden-xs'),

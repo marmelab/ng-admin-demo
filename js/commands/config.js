@@ -11,6 +11,7 @@ export default function (nga, admin) {
                 .label('Customer')
                 .targetEntity(admin.getEntity('customers'))
                 .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                .singleApiCall(ids => ({ 'id': ids }))
                 .cssClasses('hidden-xs'),
             nga.field('nb_items')
                 .map((v,e) => e.basket.length)
