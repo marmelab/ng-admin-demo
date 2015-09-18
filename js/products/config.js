@@ -3,7 +3,7 @@ import productsEditionTemplate from './productsEditionTemplate.html';
 
 var fromNow = v => moment(v).fromNow();
 
-export default function (nga, admin) {
+export default function (nga, admin, isAdminRole) {
 
     var products = admin.getEntity('products')
         .label('Posters');
@@ -52,65 +52,73 @@ export default function (nga, admin) {
                 .label('Low stock')
                 .defaultValue(10)
         ])
+    if (isAdminRole) {
+        products.listView()
         .listActions(['edit', 'delete']);
-    products.creationView()
-        .title('Create new Poster')
-        .fields([
-            nga.field('reference')
-                .validation({required: true })
-                .cssClasses('col-sm-4'),
-            nga.field('price', 'amount')
-                .validation({required: true })
-                .cssClasses('col-sm-4'),
-            nga.field('width', 'float')
-                .validation({required: true })
-                .cssClasses('col-sm-2'),
-            nga.field('height', 'float')
-                .validation({required: true })
-                .cssClasses('col-sm-2'),
-            nga.field('category_id', 'reference')
-                .label('Category')
-                .targetEntity(admin.getEntity('categories'))
-                .targetField(nga.field('name'))
-                .validation({required: true })
-                .cssClasses('col-sm-4'),
-            nga.field('stock', 'number')
-                .validation({required: true, min: 2 })
-                .cssClasses('col-sm-2'),
-            nga.field('thumbnail')
-                .validation({required: true })
-                .cssClasses('col-sm-4'),
-            nga.field('image')
-                .validation({required: true })
-                .cssClasses('col-sm-4'),
-            nga.field('description', 'wysiwyg')
-        ]);
-    products.editionView()
-        .template(productsEditionTemplate)
-        .fields(
-            products.creationView().fields(),
-            nga.field('reviews', 'referenced_list')
-                    .targetEntity(admin.getEntity('reviews'))
-                    .targetReferenceField('product_id')
-                    .permanentFilters({ status: 'accepted' })
-                    .targetFields([
-                        nga.field('date')
-                            .label('Posted')
-                            .map(fromNow)
-                            .isDetailLink(true),
-                        nga.field('rating', 'template')
-                            .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
-                        nga.field('comment')
-                            .map(function truncate(value) {
-                                if (!value) {
-                                    return '';
-                                }
-                                return value.length > 50 ? value.substr(0, 50) + '...' : value;
-                            })
-                    ])
-                    .sortField('date')
-                    .sortDir('DESC')
-        );
+    
+        products.creationView()
+            .title('Create new Poster')
+            .fields([
+                nga.field('reference')
+                    .validation({required: true })
+                    .cssClasses('col-sm-4'),
+                nga.field('price', 'amount')
+                    .validation({required: true })
+                    .cssClasses('col-sm-4'),
+                nga.field('width', 'float')
+                    .validation({required: true })
+                    .cssClasses('col-sm-2'),
+                nga.field('height', 'float')
+                    .validation({required: true })
+                    .cssClasses('col-sm-2'),
+                nga.field('category_id', 'reference')
+                    .label('Category')
+                    .targetEntity(admin.getEntity('categories'))
+                    .targetField(nga.field('name'))
+                    .validation({required: true })
+                    .cssClasses('col-sm-4'),
+                nga.field('stock', 'number')
+                    .validation({required: true, min: 2 })
+                    .cssClasses('col-sm-2'),
+                nga.field('thumbnail')
+                    .validation({required: true })
+                    .cssClasses('col-sm-4'),
+                nga.field('image')
+                    .validation({required: true })
+                    .cssClasses('col-sm-4'),
+                nga.field('description', 'wysiwyg')
+            ]);
+        products.editionView()
+            .template(productsEditionTemplate)
+            .fields(
+                products.creationView().fields(),
+                nga.field('reviews', 'referenced_list')
+                        .targetEntity(admin.getEntity('reviews'))
+                        .targetReferenceField('product_id')
+                        .permanentFilters({ status: 'accepted' })
+                        .targetFields([
+                            nga.field('date')
+                                .label('Posted')
+                                .map(fromNow)
+                                .isDetailLink(true),
+                            nga.field('rating', 'template')
+                                .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
+                            nga.field('comment')
+                                .map(function truncate(value) {
+                                    if (!value) {
+                                        return '';
+                                    }
+                                    return value.length > 50 ? value.substr(0, 50) + '...' : value;
+                                })
+                        ])
+                        .sortField('date')
+                        .sortDir('DESC')
+            );
+    } else {
+        products.listView()
+            .batchActions([])
+            .listActions();
+    }
 
     return products;
 }

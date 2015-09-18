@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(1);
-	module.exports = __webpack_require__(136);
+	module.exports = __webpack_require__(131);
 
 
 /***/ },
@@ -90,46 +90,28 @@
 	    // create the admin application
 	    var admin = nga.application('My First Admin').baseApiUrl('/');
 	
-	    if ($window.$get().localStorage.getItem('posters_galore_login') == 'admin') {
-	        //retrieving current role
-	        // add entities
-	        admin.addEntity(nga.entity('customers'));
-	        admin.addEntity(nga.entity('categories'));
-	        admin.addEntity(nga.entity('products'));
-	        admin.addEntity(nga.entity('reviews'));
-	        admin.addEntity(nga.entity('commands'));
+	    var isAdminRole = $window.$get().localStorage.getItem('posters_galore_login') == 'admin'; //retrieving current role
 	
-	        // configure entities
-	        __webpack_require__(122)(nga, admin);
-	        __webpack_require__(123)(nga, admin);
-	        __webpack_require__(124)(nga, admin);
-	        __webpack_require__(126)(nga, admin);
-	        __webpack_require__(127)(nga, admin);
+	    // add entities
+	    admin.addEntity(nga.entity('customers'));
+	    admin.addEntity(nga.entity('categories'));
+	    admin.addEntity(nga.entity('products'));
+	    admin.addEntity(nga.entity('reviews'));
+	    admin.addEntity(nga.entity('commands'));
 	
-	        admin.dashboard(__webpack_require__(128)(nga, admin));
-	        admin.header(__webpack_require__(129));
-	        admin.menu(__webpack_require__(130)(nga, admin));
+	    // configure entities
+	    __webpack_require__(122)(nga, admin, isAdminRole);
+	    __webpack_require__(123)(nga, admin, isAdminRole);
+	    __webpack_require__(124)(nga, admin, isAdminRole);
+	    __webpack_require__(126)(nga, admin, isAdminRole);
+	    __webpack_require__(127)(nga, admin, isAdminRole);
 	
-	        // attach the admin application to the DOM and execute it
-	        nga.configure(admin);
-	    } else {
-	        // add entities
-	        admin.addEntity(nga.entity('customers').readOnly());
-	        admin.addEntity(nga.entity('categories').readOnly());
-	        admin.addEntity(nga.entity('products').readOnly());
+	    admin.dashboard(__webpack_require__(128)(nga, admin, isAdminRole));
+	    admin.header(__webpack_require__(129));
+	    admin.menu(__webpack_require__(130)(nga, admin, isAdminRole));
 	
-	        // configure entities
-	        __webpack_require__(131)(nga, admin);
-	        __webpack_require__(132)(nga, admin);
-	        __webpack_require__(133)(nga, admin);
-	
-	        admin.dashboard(__webpack_require__(134)(nga, admin, $window.$get()));
-	        admin.header(__webpack_require__(129));
-	        admin.menu(__webpack_require__(135)(nga, admin));
-	
-	        // attach the admin application to the DOM and execute it
-	        nga.configure(admin);
-	    }
+	    // attach the admin application to the DOM and execute it
+	    nga.configure(admin);
 	}]);
 
 /***/ },
@@ -15610,29 +15592,32 @@
 	
 	var segments = __webpack_require__(121).choices;
 	
-	exports['default'] = function (nga, admin) {
+	exports['default'] = function (nga, admin, isAdminRole) {
 	
 	    var customer = admin.getEntity('customers');
 	    customer.listView().title('Visitors').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" style="margin-top:-5px" />'), nga.field('last_name', 'template') // use last_name for sorting
 	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow).cssClasses('hidden-xs'), nga.field('nb_commands', 'template').label('Commands').template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}').cssClasses('hidden-xs'), nga.field('total_spent', 'template').template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>').cssClasses('hidden-xs text-right'), nga.field('latest_purchase', 'datetime').cssClasses('hidden-xs'), nga.field('has_newsletter', 'boolean').label('Newsletter').cssClasses('hidden-xs'), nga.field('segments', 'template').template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('groups', 'choice').label('Segment').choices(segments), nga.field('last_seen_gte', 'datetime').label('Visited since'), nga.field('has_ordered', 'boolean'), nga.field('has_newsletter', 'boolean')]).sortField('first_seen').sortDir('DESC').listActions(['edit']);
-	    customer.editionView().title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details').fields([nga.field('first_name'), nga.field('last_name'), nga.field('email', 'email'), nga.field('address', 'text'), nga.field('zipcode'), nga.field('city'), nga.field('birthday', 'date'), nga.field('first_seen', 'datetime').editable(false), nga.field('latest_purchase', 'datetime').editable(false), nga.field('last_seen', 'datetime').editable(false), nga.field('has_newsletter', 'boolean'), nga.field('groups', 'choices').choices(segments), nga.field('commands', 'referenced_list').label('Latest commands').targetEntity(admin.getEntity('commands')).targetReferenceField('customer_id').targetFields([nga.field('date').map(fromNow), nga.field('reference').isDetailLink(true), nga.field('nb_items').map(function (v, e) {
-	        return e.basket.length;
-	    }), nga.field('total', 'amount'), nga.field('status')]).perPage(5).sortField('date').sortDir('DESC'), nga.field('commands button', 'template').label('').template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'), nga.field('reviews', 'referenced_list').label('Latest reviews').targetEntity(admin.getEntity('reviews')).targetReferenceField('customer_id').targetFields([nga.field('date').label('Posted').map(fromNow).isDetailLink(true), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'), nga.field('comment').map(function truncate(value) {
-	        if (!value) {
-	            return '';
-	        }
-	        return value.length > 50 ? value.substr(0, 50) + '...' : value;
-	    }), nga.field('status', 'choice').choices([{ label: 'accepted', value: 'accepted' }, { label: 'rejected', value: 'rejected' }, { label: 'pending', value: 'pending' }]).cssClasses(function (entry) {
-	        // add custom CSS classes to inputs and columns
-	        if (entry.values.status == 'accepted') {
-	            return 'text-center bg-success';
-	        }
-	        if (entry.values.status == 'rejected') {
-	            return 'text-center bg-danger';
-	        }
-	        return 'text-center bg-warning';
-	    })]).perPage(5).sortField('date').sortDir('DESC'), nga.field('reviews button', 'template').label('').template('<ma-filtered-list-button entity-name="reviews" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>')]);
 	
+	    if (isAdminRole) {
+	        //
+	        customer.editionView().title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details').fields([nga.field('first_name'), nga.field('last_name'), nga.field('email', 'email'), nga.field('address', 'text'), nga.field('zipcode'), nga.field('city'), nga.field('birthday', 'date'), nga.field('first_seen', 'datetime').editable(false), nga.field('latest_purchase', 'datetime').editable(false), nga.field('last_seen', 'datetime').editable(false), nga.field('has_newsletter', 'boolean'), nga.field('groups', 'choices').choices(segments), nga.field('commands', 'referenced_list').label('Latest commands').targetEntity(admin.getEntity('commands')).targetReferenceField('customer_id').targetFields([nga.field('date').map(fromNow), nga.field('reference').isDetailLink(true), nga.field('nb_items').map(function (v, e) {
+	            return e.basket.length;
+	        }), nga.field('total', 'amount'), nga.field('status')]).perPage(5).sortField('date').sortDir('DESC'), nga.field('commands button', 'template').label('').template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'), nga.field('reviews', 'referenced_list').label('Latest reviews').targetEntity(admin.getEntity('reviews')).targetReferenceField('customer_id').targetFields([nga.field('date').label('Posted').map(fromNow).isDetailLink(true), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'), nga.field('comment').map(function truncate(value) {
+	            if (!value) {
+	                return '';
+	            }
+	            return value.length > 50 ? value.substr(0, 50) + '...' : value;
+	        }), nga.field('status', 'choice').choices([{ label: 'accepted', value: 'accepted' }, { label: 'rejected', value: 'rejected' }, { label: 'pending', value: 'pending' }]).cssClasses(function (entry) {
+	            // add custom CSS classes to inputs and columns
+	            if (entry.values.status == 'accepted') {
+	                return 'text-center bg-success';
+	            }
+	            if (entry.values.status == 'rejected') {
+	                return 'text-center bg-danger';
+	            }
+	            return 'text-center bg-warning';
+	        })]).perPage(5).sortField('date').sortDir('DESC'), nga.field('reviews button', 'template').label('').template('<ma-filtered-list-button entity-name="reviews" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>')]);
+	    }
 	    return customer;
 	};
 	
@@ -15648,12 +15633,17 @@
 	    value: true
 	});
 	
-	exports['default'] = function (nga, admin) {
+	exports['default'] = function (nga, admin, isAdminRole) {
 	
 	    var categories = admin.getEntity('categories');
-	    categories.listView().fields([nga.field('name')]).listActions(['<ma-filtered-list-button entity-name="products" filter="{ category_id: entry.values.id }" size="xs" label="Related products"></ma-filtered-list-button>', 'edit', 'delete']);
-	    categories.creationView().fields([nga.field('name').validation({ required: true }), nga.field('', 'template').label('').template('<span class="pull-right"><ma-filtered-list-button entity-name="products" filter="{ category_id: entry.values.id }" size="sm"></ma-filtered-list-button></span>')]);
-	    categories.editionView().fields(categories.creationView().fields());
+	    categories.listView().fields([nga.field('name')]);
+	    if (isAdminRole) {
+	        categories.listView().listActions(['<ma-filtered-list-button entity-name="products" filter="{ category_id: entry.values.id }" size="xs" label="Related products"></ma-filtered-list-button>', 'edit', 'delete']);
+	        categories.creationView().fields([nga.field('name').validation({ required: true }), nga.field('', 'template').label('').template('<span class="pull-right"><ma-filtered-list-button entity-name="products" filter="{ category_id: entry.values.id }" size="sm"></ma-filtered-list-button></span>')]);
+	        categories.editionView().fields(categories.creationView().fields());
+	    } else {
+	        categories.listView().batchActions([]).listActions();
+	    }
 	
 	    return categories;
 	};
@@ -15684,17 +15674,23 @@
 	    return (0, _moment2['default'])(v).fromNow();
 	};
 	
-	exports['default'] = function (nga, admin) {
+	exports['default'] = function (nga, admin, isAdminRole) {
 	
 	    var products = admin.getEntity('products').label('Posters');
-	    products.listView().title('All Posters').fields([nga.field('i', 'template').isDetailLink(true).label('').template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'), nga.field('reference').isDetailLink(true), nga.field('price', 'amount').cssClasses('hidden-xs'), nga.field('width', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('height', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')).cssClasses('hidden-xs'), nga.field('stock', 'number').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')), nga.field('width_gte', 'number').label('Min width'), nga.field('width_lte', 'number').label('Max width'), nga.field('height_gte', 'number').label('Min height'), nga.field('height_lte', 'number').label('Max height'), nga.field('stock_lte', 'template').label('Low stock').defaultValue(10)]).listActions(['edit', 'delete']);
-	    products.creationView().title('Create new Poster').fields([nga.field('reference').validation({ required: true }).cssClasses('col-sm-4'), nga.field('price', 'amount').validation({ required: true }).cssClasses('col-sm-4'), nga.field('width', 'float').validation({ required: true }).cssClasses('col-sm-2'), nga.field('height', 'float').validation({ required: true }).cssClasses('col-sm-2'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')).validation({ required: true }).cssClasses('col-sm-4'), nga.field('stock', 'number').validation({ required: true, min: 2 }).cssClasses('col-sm-2'), nga.field('thumbnail').validation({ required: true }).cssClasses('col-sm-4'), nga.field('image').validation({ required: true }).cssClasses('col-sm-4'), nga.field('description', 'wysiwyg')]);
-	    products.editionView().template(_productsEditionTemplateHtml2['default']).fields(products.creationView().fields(), nga.field('reviews', 'referenced_list').targetEntity(admin.getEntity('reviews')).targetReferenceField('product_id').permanentFilters({ status: 'accepted' }).targetFields([nga.field('date').label('Posted').map(fromNow).isDetailLink(true), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'), nga.field('comment').map(function truncate(value) {
-	        if (!value) {
-	            return '';
-	        }
-	        return value.length > 50 ? value.substr(0, 50) + '...' : value;
-	    })]).sortField('date').sortDir('DESC'));
+	    products.listView().title('All Posters').fields([nga.field('i', 'template').isDetailLink(true).label('').template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'), nga.field('reference').isDetailLink(true), nga.field('price', 'amount').cssClasses('hidden-xs'), nga.field('width', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('height', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')).cssClasses('hidden-xs'), nga.field('stock', 'number').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')), nga.field('width_gte', 'number').label('Min width'), nga.field('width_lte', 'number').label('Max width'), nga.field('height_gte', 'number').label('Min height'), nga.field('height_lte', 'number').label('Max height'), nga.field('stock_lte', 'template').label('Low stock').defaultValue(10)]);
+	    if (isAdminRole) {
+	        products.listView().listActions(['edit', 'delete']);
+	
+	        products.creationView().title('Create new Poster').fields([nga.field('reference').validation({ required: true }).cssClasses('col-sm-4'), nga.field('price', 'amount').validation({ required: true }).cssClasses('col-sm-4'), nga.field('width', 'float').validation({ required: true }).cssClasses('col-sm-2'), nga.field('height', 'float').validation({ required: true }).cssClasses('col-sm-2'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')).validation({ required: true }).cssClasses('col-sm-4'), nga.field('stock', 'number').validation({ required: true, min: 2 }).cssClasses('col-sm-2'), nga.field('thumbnail').validation({ required: true }).cssClasses('col-sm-4'), nga.field('image').validation({ required: true }).cssClasses('col-sm-4'), nga.field('description', 'wysiwyg')]);
+	        products.editionView().template(_productsEditionTemplateHtml2['default']).fields(products.creationView().fields(), nga.field('reviews', 'referenced_list').targetEntity(admin.getEntity('reviews')).targetReferenceField('product_id').permanentFilters({ status: 'accepted' }).targetFields([nga.field('date').label('Posted').map(fromNow).isDetailLink(true), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'), nga.field('comment').map(function truncate(value) {
+	            if (!value) {
+	                return '';
+	            }
+	            return value.length > 50 ? value.substr(0, 50) + '...' : value;
+	        })]).sortField('date').sortDir('DESC'));
+	    } else {
+	        products.listView().batchActions([]).listActions();
+	    }
 	
 	    return products;
 	};
@@ -15717,7 +15713,11 @@
 	    value: true
 	});
 	
-	exports['default'] = function (nga, admin) {
+	exports['default'] = function (nga, admin, isAdminRole) {
+	
+	    if (!isAdminRole) {
+	        return null;
+	    }
 	
 	    var statuses = ['pending', 'accepted', 'rejected'];
 	    var statusChoices = statuses.map(function (status) {
@@ -15772,7 +15772,11 @@
 	    value: true
 	});
 	
-	exports['default'] = function (nga, admin) {
+	exports['default'] = function (nga, admin, isAdminRole) {
+	
+	    if (!isAdminRole) {
+	        return null;
+	    }
 	
 	    var commands = admin.getEntity('commands');
 	    commands.listView().sortField('date').sortDir('DESC').fields([nga.field('date', 'datetime'), nga.field('reference').isDetailLink(true), nga.field('customer_id', 'reference').label('Customer').targetEntity(admin.getEntity('customers')).targetField(nga.field('last_name').map(function (v, e) {
@@ -15809,18 +15813,22 @@
 	    return moment(v).fromNow();
 	};
 	
-	exports['default'] = function (nga, admin) {
-	
-	    return nga.dashboard().addCollection(nga.collection(admin.getEntity('commands')).name('monthly_revenue').title('Monthly revenue')
-	    //.permanentFilters({ date: { gte: moment().substract(1, 'months').toDate() } })
-	    .fields([nga.field('date', 'datetime'), nga.field('total', 'amount')]).sortField('date').sortDir('ASC').perPage(100)).addCollection(nga.collection(admin.getEntity('commands')).name('pending_orders').title('Pending orders').fields([nga.field('date', 'datetime').isDetailLink(true), nga.field('reference'), nga.field('customer_id', 'reference').label('Customer').targetEntity(admin.getEntity('customers')).targetField(nga.field('last_name').map(function (v, e) {
-	        return e.first_name + ' ' + e.last_name;
-	    })).cssClasses('hidden-xs'), nga.field('nb_items').map(function (v, e) {
-	        return e.basket.length;
-	    }), nga.field('total', 'amount').cssClasses('amount')]).permanentFilters({ status: 'ordered' }).sortField('date').sortDir('DESC')).addCollection(nga.collection(admin.getEntity('reviews')).name('latest_reviews').title('Latest reviews').fields([nga.field('customer_id', 'reference').label('Customer').targetEntity(admin.getEntity('customers')).targetField(nga.field('last_name').map(function (v, e) {
-	        return e.first_name + ' ' + e.last_name;
-	    })), nga.field('product_id', 'reference').label('Product').targetEntity(admin.getEntity('products')).targetField(nga.field('reference')), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>')]).sortField('date').sortDir('DESC').perPage(10)).addCollection(nga.collection(admin.getEntity('customers')).name('new_customers').title('New customers').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" />'), nga.field('last_name', 'template') // use last_name for sorting
-	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow)]).permanentFilters({ has_ordered: true }).sortField('first_seen').sortDir('DESC').perPage(10)).template('\n<div class="row dashboard-starter"></div>\n<dashboard-summary></dashboard-summary>\n<div class="row dashboard-content">\n    <div class="col-lg-6">\n        <div class="panel panel-default">\n            <ma-dashboard-panel collection="dashboardController.collections.pending_orders" entries="dashboardController.entries.pending_orders"></ma-dashboard-panel>\n        </div>\n    </div>\n    <div class="col-lg-6">\n        <div class="panel panel-default">\n            <ma-dashboard-panel collection="dashboardController.collections.latest_reviews" entries="dashboardController.entries.latest_reviews"></ma-dashboard-panel>\n        </div>\n        <div class="panel panel-default">\n            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n        </div>\n    </div>\n</div>\n');
+	exports['default'] = function (nga, admin, isAdminRole) {
+	    if (isAdminRole) {
+	        return nga.dashboard().addCollection(nga.collection(admin.getEntity('commands')).name('monthly_revenue').title('Monthly revenue')
+	        //.permanentFilters({ date: { gte: moment().substract(1, 'months').toDate() } })
+	        .fields([nga.field('date', 'datetime'), nga.field('total', 'amount')]).sortField('date').sortDir('ASC').perPage(100)).addCollection(nga.collection(admin.getEntity('commands')).name('pending_orders').title('Pending orders').fields([nga.field('date', 'datetime').isDetailLink(true), nga.field('reference'), nga.field('customer_id', 'reference').label('Customer').targetEntity(admin.getEntity('customers')).targetField(nga.field('last_name').map(function (v, e) {
+	            return e.first_name + ' ' + e.last_name;
+	        })).cssClasses('hidden-xs'), nga.field('nb_items').map(function (v, e) {
+	            return e.basket.length;
+	        }), nga.field('total', 'amount').cssClasses('amount')]).permanentFilters({ status: 'ordered' }).sortField('date').sortDir('DESC')).addCollection(nga.collection(admin.getEntity('reviews')).name('latest_reviews').title('Latest reviews').fields([nga.field('customer_id', 'reference').label('Customer').targetEntity(admin.getEntity('customers')).targetField(nga.field('last_name').map(function (v, e) {
+	            return e.first_name + ' ' + e.last_name;
+	        })), nga.field('product_id', 'reference').label('Product').targetEntity(admin.getEntity('products')).targetField(nga.field('reference')), nga.field('rating', 'template').template('<star-rating stars="{{ entry.values.rating }}"></star-rating>')]).sortField('date').sortDir('DESC').perPage(10)).addCollection(nga.collection(admin.getEntity('customers')).name('new_customers').title('New customers').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" />'), nga.field('last_name', 'template') // use last_name for sorting
+	        .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow)]).permanentFilters({ has_ordered: true }).sortField('first_seen').sortDir('DESC').perPage(10)).template('\n                <div class="row dashboard-starter"></div>\n                <dashboard-summary></dashboard-summary>\n                <div class="row dashboard-content">\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.pending_orders" entries="dashboardController.entries.pending_orders"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.latest_reviews" entries="dashboardController.entries.latest_reviews"></ma-dashboard-panel>\n                        </div>\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                </div>\n            ');
+	    } else {
+	        return nga.dashboard().addCollection(nga.collection(admin.getEntity('customers')).name('new_customers').title('New customers').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" />'), nga.field('last_name', 'template') // use last_name for sorting
+	        .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow)]).permanentFilters({ has_ordered: true }).sortField('first_seen').sortDir('DESC').perPage(10)).template('\n                <div class="row dashboard-starter"></div>\n                <dashboard-summary></dashboard-summary>\n                <div class="row dashboard-content">\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                </div>\n            ');
+	    }
 	};
 	
 	module.exports = exports['default'];
@@ -15841,161 +15849,40 @@
 	    value: true
 	});
 	
-	exports['default'] = function (nga, admin) {
-	    return nga.menu().addChild(nga.menu().title('Visitors').icon('<span class="fa fa-users fa-fw"></span>').active(function (path) {
-	        return path.indexOf('/customers') === 0;
-	    }) // active() is the function that determines if the menu is active
-	    .addChild(nga.menu().title('Leads').link('/customers/list?search={"has_ordered":"false"}') // use the same entity list for several menu items
-	    .icon('<span class="fa fa-user-times fa-fw"></span>')) // no active() function => will never appear active
-	    .addChild(nga.menu().title('Customers').link('/customers/list?search={"has_ordered":"true"}') // use the same entity list for several menu items
-	    .icon('<span class="fa fa-user fa-fw"></span>')).addChild(nga.menu().title('Segments').link('/segments') // this state isn't handled by ng-admin - no problem
-	    .active(function (path) {
-	        return path == '/segments';
-	    }).icon('<span class="fa fa-scissors fa-fw"></span>'))).addChild(nga.menu().title('Sales').icon('<span class="fa fa-shopping-cart fa-fw"></span>').active(function (path) {
-	        return path.indexOf('/commands') === 0;
-	    }).addChild(nga.menu().title('Orders').link('/commands/list?search={"status":"ordered"}').icon('<span class="fa fa-credit-card fa-fw"></span>')).addChild(nga.menu().title('Invoices').link('/commands/list?search={"status":"delivered"}').icon('<span class="fa fa-usd fa-fw"></span>')).addChild(nga.menu().title('Cancels').link('/commands/list?search={"status":"cancelled"}').icon('<span class="fa fa-hand-o-left fa-fw"></span>'))).addChild(nga.menu().title('Catalog').icon('<span class="fa fa-th-list fa-fw"></span>').addChild(nga.menu(admin.getEntity('products')) // nga.menu(entity) sets defaults title, link and active values correctly
-	    .icon('<span class="fa fa-picture-o fa-fw"></span>')).addChild(nga.menu(admin.getEntity('categories')).icon('<span class="fa fa-tags fa-fw"></span>'))).addChild(nga.menu(admin.getEntity('reviews')).icon('<span class="fa fa-comments fa-fw"></span>'));
+	exports['default'] = function (nga, admin, isAdminRole) {
+	    if (isAdminRole) {
+	        return nga.menu().addChild(nga.menu().title('Visitors').icon('<span class="fa fa-users fa-fw"></span>').active(function (path) {
+	            return path.indexOf('/customers') === 0;
+	        }) // active() is the function that determines if the menu is active
+	        .addChild(nga.menu().title('Leads').link('/customers/list?search={"has_ordered":"false"}') // use the same entity list for several menu items
+	        .icon('<span class="fa fa-user-times fa-fw"></span>')) // no active() function => will never appear active
+	        .addChild(nga.menu().title('Customers').link('/customers/list?search={"has_ordered":"true"}') // use the same entity list for several menu items
+	        .icon('<span class="fa fa-user fa-fw"></span>')).addChild(nga.menu().title('Segments').link('/segments') // this state isn't handled by ng-admin - no problem
+	        .active(function (path) {
+	            return path == '/segments';
+	        }).icon('<span class="fa fa-scissors fa-fw"></span>'))).addChild(nga.menu().title('Sales').icon('<span class="fa fa-shopping-cart fa-fw"></span>').active(function (path) {
+	            return path.indexOf('/commands') === 0;
+	        }).addChild(nga.menu().title('Orders').link('/commands/list?search={"status":"ordered"}').icon('<span class="fa fa-credit-card fa-fw"></span>')).addChild(nga.menu().title('Invoices').link('/commands/list?search={"status":"delivered"}').icon('<span class="fa fa-usd fa-fw"></span>')).addChild(nga.menu().title('Cancels').link('/commands/list?search={"status":"cancelled"}').icon('<span class="fa fa-hand-o-left fa-fw"></span>'))).addChild(nga.menu().title('Catalog').icon('<span class="fa fa-th-list fa-fw"></span>').addChild(nga.menu(admin.getEntity('products')) // nga.menu(entity) sets defaults title, link and active values correctly
+	        .icon('<span class="fa fa-picture-o fa-fw"></span>')).addChild(nga.menu(admin.getEntity('categories')).icon('<span class="fa fa-tags fa-fw"></span>'))).addChild(nga.menu(admin.getEntity('reviews')).icon('<span class="fa fa-comments fa-fw"></span>'));
+	    } else {
+	        return nga.menu().addChild(nga.menu().title('Visitors').icon('<span class="fa fa-users fa-fw"></span>').active(function (path) {
+	            return path.indexOf('/customers') === 0;
+	        }) // active() is the function that determines if the menu is active
+	        .addChild(nga.menu().title('Leads').link('/customers/list?search={"has_ordered":"false"}') // use the same entity list for several menu items
+	        .icon('<span class="fa fa-user-times fa-fw"></span>')) // no active() function => will never appear active
+	        .addChild(nga.menu().title('Customers').link('/customers/list?search={"has_ordered":"true"}') // use the same entity list for several menu items
+	        .icon('<span class="fa fa-user fa-fw"></span>')).addChild(nga.menu().title('Segments').link('/segments') // this state isn't handled by ng-admin - no problem
+	        .active(function (path) {
+	            return path == '/segments';
+	        }).icon('<span class="fa fa-scissors fa-fw"></span>'))).addChild(nga.menu().title('Catalog').icon('<span class="fa fa-th-list fa-fw"></span>').addChild(nga.menu(admin.getEntity('products')) // nga.menu(entity) sets defaults title, link and active values correctly
+	        .icon('<span class="fa fa-picture-o fa-fw"></span>')).addChild(nga.menu(admin.getEntity('categories')).icon('<span class="fa fa-tags fa-fw"></span>')));
+	    }
 	};
 	
 	module.exports = exports['default'];
 
 /***/ },
 /* 131 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	var moment = __webpack_require__(30);
-	var fromNow = function fromNow(v) {
-	    return moment(v).fromNow();
-	};
-	
-	var segments = __webpack_require__(121).choices;
-	
-	exports['default'] = function (nga, admin) {
-	
-	    var customer = admin.getEntity('customers');
-	    customer.listView().title('Visitors').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" style="margin-top:-5px" />'), nga.field('last_name', 'template') // use last_name for sorting
-	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow).cssClasses('hidden-xs'), nga.field('nb_commands', 'template').label('Commands').template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}').cssClasses('hidden-xs'), nga.field('total_spent', 'template').template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>').cssClasses('hidden-xs text-right'), nga.field('latest_purchase', 'datetime').cssClasses('hidden-xs'), nga.field('has_newsletter', 'boolean').label('Newsletter').cssClasses('hidden-xs'), nga.field('segments', 'template').template('<span ng-repeat="group in entry.values.groups track by $index" class="label label-default">{{ group }}</span>').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('groups', 'choice').label('Segment').choices(segments), nga.field('last_seen_gte', 'datetime').label('Visited since'), nga.field('has_ordered', 'boolean'), nga.field('has_newsletter', 'boolean')]).sortField('first_seen').sortDir('DESC').batchActions([]).listActions();
-	
-	    return customer;
-	};
-	
-	module.exports = exports['default'];
-
-/***/ },
-/* 132 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	
-	exports['default'] = function (nga, admin) {
-	
-	    var categories = admin.getEntity('categories');
-	    categories.listView().fields([nga.field('name')]).batchActions([]).listActions();
-	    return categories;
-	};
-	
-	module.exports = exports['default'];
-
-/***/ },
-/* 133 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	var _moment = __webpack_require__(30);
-	
-	var _moment2 = _interopRequireDefault(_moment);
-	
-	var _productsEditionTemplateHtml = __webpack_require__(125);
-	
-	var _productsEditionTemplateHtml2 = _interopRequireDefault(_productsEditionTemplateHtml);
-	
-	var fromNow = function fromNow(v) {
-	    return (0, _moment2['default'])(v).fromNow();
-	};
-	
-	exports['default'] = function (nga, admin) {
-	
-	    var products = admin.getEntity('products').label('Posters');
-	    products.listView().title('All Posters').fields([nga.field('i', 'template').isDetailLink(true).label('').template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'), nga.field('reference').isDetailLink(true), nga.field('price', 'amount').cssClasses('hidden-xs'), nga.field('width', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('height', 'float').format('0.00').cssClasses('hidden-xs'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')).cssClasses('hidden-xs'), nga.field('stock', 'number').cssClasses('hidden-xs')]).filters([nga.field('q', 'template').label('').pinned(true).template('<div class="input-group"><input type="text" ng-model="value" placeholder="Search" class="form-control"></input><span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span></div>'), nga.field('category_id', 'reference').label('Category').targetEntity(admin.getEntity('categories')).targetField(nga.field('name')), nga.field('width_gte', 'number').label('Min width'), nga.field('width_lte', 'number').label('Max width'), nga.field('height_gte', 'number').label('Min height'), nga.field('height_lte', 'number').label('Max height'), nga.field('stock_lte', 'template').label('Low stock').defaultValue(10)]).batchActions([]).listActions();
-	
-	    return products;
-	};
-	
-	module.exports = exports['default'];
-
-/***/ },
-/* 134 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	var moment = __webpack_require__(30);
-	var fromNow = function fromNow(v) {
-	    return moment(v).fromNow();
-	};
-	
-	exports['default'] = function (nga, admin, $window) {
-	
-	    var dashboard = nga.dashboard().addCollection(nga.collection(admin.getEntity('customers')).name('new_customers').title('New customers').fields([nga.field('avatar', 'template').label('').template('<img src="{{ entry.values.avatar }}" width="25" />'), nga.field('last_name', 'template') // use last_name for sorting
-	    .label('Name').isDetailLink(true).template('{{ entry.values.first_name }} {{ entry.values.last_name }}'), nga.field('last_seen', 'datetime').map(fromNow)]).permanentFilters({ has_ordered: true }).sortField('first_seen').sortDir('DESC').perPage(10));
-	
-	    if ($window.localStorage.getItem('posters_galore_login') == 'admin') {
-	        dashboard.template('\n                <div class="row dashboard-starter"></div>\n                <dashboard-summary></dashboard-summary>\n                <div class="row dashboard-content">\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.pending_orders" entries="dashboardController.entries.pending_orders"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.latest_reviews" entries="dashboardController.entries.latest_reviews"></ma-dashboard-panel>\n                        </div>\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                </div>\n            ');
-	    } else {
-	        dashboard.template('\n                <div class="row dashboard-starter"></div>\n                <dashboard-summary></dashboard-summary>\n                <div class="row dashboard-content">\n                    <div class="col-lg-6">\n                        <div class="panel panel-default">\n                            <ma-dashboard-panel collection="dashboardController.collections.new_customers" entries="dashboardController.entries.new_customers"></ma-dashboard-panel>\n                        </div>\n                    </div>\n                </div>\n            ');
-	    }
-	    return dashboard;
-	};
-	
-	module.exports = exports['default'];
-
-/***/ },
-/* 135 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	
-	exports['default'] = function (nga, admin) {
-	    return nga.menu().addChild(nga.menu().title('Visitors').icon('<span class="fa fa-users fa-fw"></span>').active(function (path) {
-	        return path.indexOf('/customers') === 0;
-	    }) // active() is the function that determines if the menu is active
-	    .addChild(nga.menu().title('Leads').link('/customers/list?search={"has_ordered":"false"}') // use the same entity list for several menu items
-	    .icon('<span class="fa fa-user-times fa-fw"></span>')) // no active() function => will never appear active
-	    .addChild(nga.menu().title('Customers').link('/customers/list?search={"has_ordered":"true"}') // use the same entity list for several menu items
-	    .icon('<span class="fa fa-user fa-fw"></span>')).addChild(nga.menu().title('Segments').link('/segments') // this state isn't handled by ng-admin - no problem
-	    .active(function (path) {
-	        return path == '/segments';
-	    }).icon('<span class="fa fa-scissors fa-fw"></span>'))).addChild(nga.menu().title('Catalog').icon('<span class="fa fa-th-list fa-fw"></span>').addChild(nga.menu(admin.getEntity('products')) // nga.menu(entity) sets defaults title, link and active values correctly
-	    .icon('<span class="fa fa-picture-o fa-fw"></span>')).addChild(nga.menu(admin.getEntity('categories')).icon('<span class="fa fa-tags fa-fw"></span>')));
-	};
-	
-	module.exports = exports['default'];
-
-/***/ },
-/* 136 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin

@@ -3,7 +3,7 @@ var fromNow = v => moment(v).fromNow();
 
 var segments = require('../segments/segments').choices;
 
-export default function (nga, admin) {
+export default function (nga, admin, isAdminRole) {
 
     var customer = admin.getEntity('customers');
     customer.listView()
@@ -19,11 +19,13 @@ export default function (nga, admin) {
             nga.field('last_seen', 'datetime')
                 .map(fromNow)
                 .cssClasses('hidden-xs'),
-            nga.field('nb_commands', 'number')
+            nga.field('nb_commands', 'template')
                 .label('Commands')
-                .cssClasses(entry => entry.values.nb_commands ? 'hidden-xs' : 'transparent hidden-xs'),
-            nga.field('total_spent', 'amount')
-                .cssClasses(entry => entry.values.total_spent ? 'hidden-xs' : 'transparent hidden-xs'),
+                .template('{{ entry.values.nb_commands ? entry.values.nb_commands : "" }}')
+                .cssClasses('hidden-xs'),
+            nga.field('total_spent', 'template')
+                .template('<div class="amount" ng-if="::entry.values[field.name()]">$<ma-number-column field="::field" value="::entry.values[field.name()]"></ma-number-column></div>')
+                .cssClasses('hidden-xs text-right'),
             nga.field('latest_purchase', 'datetime')
                 .cssClasses('hidden-xs'),
             nga.field('has_newsletter', 'boolean')
@@ -49,86 +51,88 @@ export default function (nga, admin) {
         .sortField('first_seen')
         .sortDir('DESC')
         .listActions(['edit']);
-    customer.editionView()
-        .title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details')
-        .fields([
-            nga.field('first_name'),
-            nga.field('last_name'),
-            nga.field('email', 'email'),
-            nga.field('address', 'text'),
-            nga.field('zipcode'),
-            nga.field('city'),
-            nga.field('birthday', 'date'),
-            nga.field('first_seen', 'datetime')
-                .editable(false),
-            nga.field('latest_purchase', 'datetime')
-                .editable(false),
-            nga.field('last_seen', 'datetime')
-                .editable(false),
-            nga.field('has_newsletter', 'boolean'),
-            nga.field('groups', 'choices')
-                .choices(segments),
-            nga.field('commands', 'referenced_list')
-                .label('Latest commands')
-                .targetEntity(admin.getEntity('commands'))
-                .targetReferenceField('customer_id')
-                .targetFields([
-                    nga.field('date')
-                        .map(fromNow),
-                    nga.field('reference')
-                        .isDetailLink(true),
-                    nga.field('nb_items')
-                        .map((v,e) => e.basket.length),
-                    nga.field('total', 'amount'),
-                    nga.field('status')
-                ])
-                .perPage(5)
-                .sortField('date')
-                .sortDir('DESC'),
-            nga.field('commands button', 'template')
-                .label('')
-                .template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'),
-            nga.field('reviews', 'referenced_list')
-                .label('Latest reviews')
-                .targetEntity(admin.getEntity('reviews'))
-                .targetReferenceField('customer_id')
-                .targetFields([
-                    nga.field('date')
-                        .label('Posted')
-                        .map(fromNow)
-                        .isDetailLink(true),
-                    nga.field('rating', 'template')
-                        .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
-                    nga.field('comment')
-                        .map(function truncate(value) {
-                            if (!value) {
-                                return '';
-                            }
-                            return value.length > 50 ? value.substr(0, 50) + '...' : value;
-                        }),
-                    nga.field('status', 'choice')
-                        .choices([
-                            { label: 'accepted', value: 'accepted' },
-                            { label: 'rejected', value: 'rejected' },
-                            { label: 'pending', value: 'pending' }
-                        ])
-                        .cssClasses(function(entry) { // add custom CSS classes to inputs and columns
-                            if (entry.values.status == 'accepted') {
-                                return 'text-center bg-success';
-                            }
-                            if (entry.values.status == 'rejected') {
-                                return 'text-center bg-danger';
-                            }
-                            return 'text-center bg-warning';
-                        }),
-                ])
-                .perPage(5)
-                .sortField('date')
-                .sortDir('DESC'),
-            nga.field('reviews button', 'template')
-                .label('')
-                .template('<ma-filtered-list-button entity-name="reviews" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'),
-        ])
 
+    if (isAdminRole) { //
+        customer.editionView()
+            .title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details')
+            .fields([
+                nga.field('first_name'),
+                nga.field('last_name'),
+                nga.field('email', 'email'),
+                nga.field('address', 'text'),
+                nga.field('zipcode'),
+                nga.field('city'),
+                nga.field('birthday', 'date'),
+                nga.field('first_seen', 'datetime')
+                    .editable(false),
+                nga.field('latest_purchase', 'datetime')
+                    .editable(false),
+                nga.field('last_seen', 'datetime')
+                    .editable(false),
+                nga.field('has_newsletter', 'boolean'),
+                nga.field('groups', 'choices')
+                    .choices(segments),
+                nga.field('commands', 'referenced_list')
+                    .label('Latest commands')
+                    .targetEntity(admin.getEntity('commands'))
+                    .targetReferenceField('customer_id')
+                    .targetFields([
+                        nga.field('date')
+                            .map(fromNow),
+                        nga.field('reference')
+                            .isDetailLink(true),
+                        nga.field('nb_items')
+                            .map((v,e) => e.basket.length),
+                        nga.field('total', 'amount'),
+                        nga.field('status')
+                    ])
+                    .perPage(5)
+                    .sortField('date')
+                    .sortDir('DESC'),
+                nga.field('commands button', 'template')
+                    .label('')
+                    .template('<ma-filtered-list-button entity-name="commands" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'),
+                nga.field('reviews', 'referenced_list')
+                    .label('Latest reviews')
+                    .targetEntity(admin.getEntity('reviews'))
+                    .targetReferenceField('customer_id')
+                    .targetFields([
+                        nga.field('date')
+                            .label('Posted')
+                            .map(fromNow)
+                            .isDetailLink(true),
+                        nga.field('rating', 'template')
+                            .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
+                        nga.field('comment')
+                            .map(function truncate(value) {
+                                if (!value) {
+                                    return '';
+                                }
+                                return value.length > 50 ? value.substr(0, 50) + '...' : value;
+                            }),
+                        nga.field('status', 'choice')
+                            .choices([
+                                { label: 'accepted', value: 'accepted' },
+                                { label: 'rejected', value: 'rejected' },
+                                { label: 'pending', value: 'pending' }
+                            ])
+                            .cssClasses(function(entry) { // add custom CSS classes to inputs and columns
+                                if (entry.values.status == 'accepted') {
+                                    return 'text-center bg-success';
+                                }
+                                if (entry.values.status == 'rejected') {
+                                    return 'text-center bg-danger';
+                                }
+                                return 'text-center bg-warning';
+                            }),
+                    ])
+                    .perPage(5)
+                    .sortField('date')
+                    .sortDir('DESC'),
+                nga.field('reviews button', 'template')
+                    .label('')
+                    .template('<ma-filtered-list-button entity-name="reviews" filter="{ customer_id: entry.values.id }"></ma-filtered-list-button>'),
+            ])
+    }
     return customer;
 }

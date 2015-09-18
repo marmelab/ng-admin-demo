@@ -1,4 +1,8 @@
-export default function (nga, admin) {
+export default function (nga, admin, isAdminRole) {
+
+    if (!isAdminRole) {
+        return null;
+    }
 
     var commands = admin.getEntity('commands');
     commands.listView()
@@ -40,7 +44,7 @@ export default function (nga, admin) {
                     { label: 'cancelled', value: 'cancelled' }
                 ]),
             nga.field('date_gte', 'datetime')
-                .label('Passed since'),
+                .label('Passed after'),
             nga.field('date_lte', 'datetime')
                 .label('Passed before'),
             nga.field('total_gte', 'amount')

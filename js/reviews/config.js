@@ -1,4 +1,8 @@
-export default function (nga, admin) {
+export default function (nga, admin, isAdminRole) {
+
+    if (!isAdminRole) {
+        return null;
+    }
 
     const statuses = ['pending', 'accepted', 'rejected'];
     const statusChoices = statuses.map(status => { return { label: status, value: status } });
