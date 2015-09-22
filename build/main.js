@@ -15734,6 +15734,9 @@
 	        return value.length > 50 ? value.substr(0, 50) + '...' : value;
 	    }).cssClasses('hidden-xs'), nga.field('status', 'choice').choices(statusChoices).cssClasses(function (entry) {
 	        // add custom CSS classes to inputs and columns
+	        if (!entry) {
+	            return '';
+	        }
 	        if (entry.values.status == 'accepted') {
 	            return 'text-center bg-success';
 	        }
