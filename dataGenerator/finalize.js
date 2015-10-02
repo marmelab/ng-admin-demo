@@ -56,9 +56,10 @@ export default function(db, chance) {
         }
     })
 
-    db.configurations = [{
-        id: 0,
-        value: {
+    // add settings
+    db.settings = [{
+        id: 1,
+        configuration: {
             url: "http://posters-galore.com/",
             mail: {
                 sender: "julio@posters-galore.com",

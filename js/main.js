@@ -40,7 +40,7 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
     admin.addEntity(nga.entity('products'));
     admin.addEntity(nga.entity('reviews'));
     admin.addEntity(nga.entity('commands'));
-    admin.addEntity(nga.entity('configurations'));
+    admin.addEntity(nga.entity('settings'));
 
     // configure entities
     require('./customers/config')(nga, admin);
@@ -48,7 +48,7 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
     require('./products/config')(nga, admin);
     require('./reviews/config')(nga, admin);
     require('./commands/config')(nga, admin);
-    require('./configurations/config')(nga, admin);
+    require('./settings/config')(nga, admin);
 
     admin.dashboard(require('./dashboard/config')(nga, admin));
     admin.header(require('./header.html'));

@@ -96,7 +96,7 @@
 	    admin.addEntity(nga.entity('products'));
 	    admin.addEntity(nga.entity('reviews'));
 	    admin.addEntity(nga.entity('commands'));
-	    admin.addEntity(nga.entity('configurations'));
+	    admin.addEntity(nga.entity('settings'));
 	
 	    // configure entities
 	    __webpack_require__(122)(nga, admin);
@@ -15820,11 +15820,13 @@
 	
 	exports['default'] = function (nga, admin) {
 	
-	    var configurations = admin.getEntity('configurations');
-	    configurations.editionView().title('Site configuration').fields([nga.field('value', 'json')]).actions(['show']);
-	    configurations.showView().title('Site configuration').fields(configurations.editionView().fields()).actions(['edit']);;
+	    var settings = admin.getEntity('settings');
 	
-	    return configurations;
+	    settings.editionView().title('Site Configuration').fields([nga.field('configuration', 'json').label('')]).actions(['show']);
+	
+	    settings.showView().title('Site Configuration').fields(settings.editionView().fields()).actions(['edit']);;
+	
+	    return settings;
 	};
 	
 	module.exports = exports['default'];
@@ -15894,8 +15896,8 @@
 	    }).icon('<span class="fa fa-scissors fa-fw"></span>'))).addChild(nga.menu().title('Sales').icon('<span class="fa fa-shopping-cart fa-fw"></span>').active(function (path) {
 	        return path.indexOf('/commands') === 0;
 	    }).addChild(nga.menu().title('Orders').link('/commands/list?search={"status":"ordered"}').icon('<span class="fa fa-credit-card fa-fw"></span>')).addChild(nga.menu().title('Invoices').link('/commands/list?search={"status":"delivered"}').icon('<span class="fa fa-usd fa-fw"></span>')).addChild(nga.menu().title('Cancels').link('/commands/list?search={"status":"cancelled"}').icon('<span class="fa fa-hand-o-left fa-fw"></span>'))).addChild(nga.menu().title('Catalog').icon('<span class="fa fa-th-list fa-fw"></span>').addChild(nga.menu(admin.getEntity('products')) // nga.menu(entity) sets defaults title, link and active values correctly
-	    .icon('<span class="fa fa-picture-o fa-fw"></span>')).addChild(nga.menu(admin.getEntity('categories')).icon('<span class="fa fa-tags fa-fw"></span>'))).addChild(nga.menu(admin.getEntity('reviews')).icon('<span class="fa fa-comments fa-fw"></span>')).addChild(nga.menu().title('Configuration').icon('<span class="fa fa-cog fa-fw"></span>').link('/configurations/show/0').active(function (path) {
-	        return path.indexOf('/configurations') === 0;
+	    .icon('<span class="fa fa-picture-o fa-fw"></span>')).addChild(nga.menu(admin.getEntity('categories')).icon('<span class="fa fa-tags fa-fw"></span>'))).addChild(nga.menu(admin.getEntity('reviews')).icon('<span class="fa fa-comments fa-fw"></span>')).addChild(nga.menu().title('Configuration').icon('<span class="fa fa-cog fa-fw"></span>').link('/settings/show/1').active(function (path) {
+	        return path.indexOf('/settings') === 0;
 	    }));
 	};
 	
