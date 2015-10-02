@@ -45,5 +45,11 @@ export default function (nga, admin) {
         )
         .addChild(nga.menu(admin.getEntity('reviews'))
             .icon('<span class="fa fa-comments fa-fw"></span>'))
+        .addChild(nga.menu()
+            .title('Configuration')
+            .icon('<span class="fa fa-cog fa-fw"></span>')
+            .link('/configurations/show/0')
+            .active(path => path.indexOf('/configurations') === 0)
+        )
     ;
 }

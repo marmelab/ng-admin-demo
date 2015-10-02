@@ -55,4 +55,22 @@ export default function(db, chance) {
             customer.groups.push('reviewer');
         }
     })
+
+    db.configurations = [{
+        id: 0,
+        value: {
+            url: "http://posters-galore.com/",
+            mail: {
+                sender: "julio@posters-galore.com",
+                transport: {
+                    service: "fakemail",
+                    auth: {
+                        user: "fake@mail.com",
+                        pass: "f00b@r"
+                    }
+                },
+            },
+            file_type_whiltelist: ["txt", "doc", "docx","xls", "xlsx", "pdf", "png", "jpg"],
+        }
+    }];
 }

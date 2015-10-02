@@ -1,7 +1,6 @@
 export default function (nga, admin) {
-
     const statuses = ['pending', 'accepted', 'rejected'];
-    const statusChoices = statuses.map(status => { return { label: status, value: status } });
+    const statusChoices = statuses.map(status => ({ label: status, value: status }));
 
     var reviews = admin.getEntity('reviews');
     reviews.listView()
