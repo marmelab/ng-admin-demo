@@ -835,6 +835,7 @@ input[type="submit"]:hover{
 	font-weight: 600;
 	margin-bottom: 4%;
 	}
+}
 @media (max-width:320px){
 	.login-form  {
 		margin:20% auto 0;
