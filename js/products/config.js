@@ -53,7 +53,19 @@ export default function (nga, admin) {
                 .label('Low stock')
                 .defaultValue(10)
         ])
-        .listActions(['edit', 'delete']);
+        .listActions(['edit', 'delete'])
+        .exportFields([
+            nga.field('reference'),
+            nga.field('price', 'amount'),
+            nga.field('width', 'float').format('0.00'),
+            nga.field('height', 'float').format('0.00'),
+            nga.field('category_id', 'reference')
+                .label('Category')
+                .targetEntity(admin.getEntity('categories'))
+                .targetField(nga.field('name'))
+                .singleApiCall(ids => ({ 'id': ids })),
+            nga.field('stock', 'number'),
+        ]);
     products.creationView()
         .title('Create new Poster')
         .fields([

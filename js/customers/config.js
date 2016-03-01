@@ -48,7 +48,19 @@ export default function (nga, admin) {
         ])
         .sortField('first_seen')
         .sortDir('DESC')
-        .listActions(['edit']);
+        .listActions(['edit'])
+        .actions(['filter', 'export'])
+        .exportFields([
+            nga.field('last_name', 'text').label('Name'),
+            nga.field('nb_commands', 'number').label('Commands'),
+            nga.field('total_spent', 'amount'),
+            nga.field('latest_purchase', 'datetime'),
+            nga.field('has_newsletter', 'boolean'),
+        ])
+        .exportOptions({
+            quotes: true,
+            delimiter: ';'
+        });
     customer.editionView()
         .title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details')
         .fields([

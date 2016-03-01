@@ -77,7 +77,8 @@ export default function (nga, admin) {
             '<batch-approve type="accept" selection="selection"></batch-approve>',
             '<batch-approve type="reject" selection="selection"></batch-approve>',
             'delete'
-        ]);
+        ])
+        .actions(['filter']);
 
     reviews.editionView()
         .fields([

@@ -5,7 +5,10 @@ export default function (nga, admin) {
         .fields([
             nga.field('name'),
         ])
-        .listActions(['<ma-filtered-list-button entity-name="products" filter="{ category_id: entry.values.id }" size="xs" label="Related products"></ma-filtered-list-button>', 'edit', 'delete']);
+        .listActions(['<ma-filtered-list-button entity-name="products" filter="{ category_id: entry.values.id }" size="xs" label="Related products"></ma-filtered-list-button>', 'edit', 'delete'])
+        .exportFields([
+            nga.field('name').label('Name'),
+        ]);
     categories.creationView()
         .fields([
             nga.field('name')
