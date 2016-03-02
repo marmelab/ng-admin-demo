@@ -20,6 +20,7 @@ myApp.directive('batchApprove', require('./reviews/batchApprove'));
 myApp.directive('starRating', require('./reviews/starRating'));
 myApp.directive('basket', require('./commands/basket'));
 myApp.directive('dashboardSummary', require('./dashboard/dashboardSummary'));
+myApp.directive('zoomInModal', require('./products/zoomInModal'));
 
 // custom controllers
 myApp.controller('username', ['$scope', '$window', function($scope, $window) { // used in header.html
