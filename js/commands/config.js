@@ -48,7 +48,21 @@ export default function (nga, admin) {
                 .label('Min amount'),
             nga.field('returned', 'boolean')
         ])
-        .listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>']);
+        .listActions(['<ma-edit-button entry="::entry" entity="::entity" size="xs" label="Details"></ma-edit-button>'])
+        .exportFields([
+            nga.field('date', 'datetime'),
+            nga.field('reference'),
+            nga.field('customer_id', 'reference')
+                .label('Customer')
+                .targetEntity(admin.getEntity('customers'))
+                .targetField(nga.field('last_name').map((v, e) => e.first_name + ' ' + e.last_name))
+                .singleApiCall(ids => ({ 'id': ids })),
+            nga.field('nb_items')
+                .map((v,e) => e.basket.length),
+            nga.field('total', 'amount'),
+            nga.field('status'),
+            nga.field('returned', 'boolean'),
+        ]);
     commands.editionView()
         .title('Command #{{ entry.values.reference }}')
         .fields([
