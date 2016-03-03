@@ -11,9 +11,8 @@ export default function (nga, admin) {
         .title('All Posters')
         .fields([
             nga.field('i', 'template')
-                .isDetailLink(true)
                 .label('')
-                .template('<img src="{{ entry.values.thumbnail }}" class="poster_mini_thumbnail" />'),
+                .template('<zoom-in-modal thumbnail="{{ entry.values.thumbnail }}" image="{{ entry.values.image }}"></zoom-in-modal>'),
             nga.field('reference').isDetailLink(true),
             nga.field('price', 'amount')
                 .cssClasses('hidden-xs'),
