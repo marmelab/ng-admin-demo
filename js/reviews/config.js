@@ -21,7 +21,7 @@ export default function (nga, admin) {
                 .singleApiCall(ids => ({ 'id': ids }))
                 .cssClasses('hidden-xs'),
             nga.field('rating', 'template')
-                .template('<star-rating stars="{{ entry.values.rating }}"></star-rating>'),
+                .template(entry => `<star-rating stars="${ entry.values.rating }"></star-rating>`),
             nga.field('comment')
                 .map(function truncate(value) {
                     if (!value) {

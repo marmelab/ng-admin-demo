@@ -11,7 +11,7 @@ export default function (nga, admin) {
         .fields([
             nga.field('avatar', 'template')
                 .label('')
-                .template('<img src="{{ entry.values.avatar }}" width="25" style="margin-top:-5px" />'),
+                .template(entry => `<img src="${ entry.values.avatar }" width="25" style="margin-top:-5px" />`),
             nga.field('last_name', 'template') // use last_name for sorting
                 .label('Name')
                 .isDetailLink(true)
@@ -48,7 +48,17 @@ export default function (nga, admin) {
         ])
         .sortField('first_seen')
         .sortDir('DESC')
-        .listActions(['edit']);
+        .listActions(['edit'])
+        .exportFields([
+            nga.field('avatar', 'text'),
+            nga.field('last_name', 'template').label('Name').template(entry => entry.values.first_name + ' ' + entry.values.last_name),
+            nga.field('last_seen', 'datetime'),
+            nga.field('nb_commands', 'number').label('Commands'),
+            nga.field('total_spent', 'amount'),
+            nga.field('latest_purchase', 'datetime'),
+            nga.field('has_newsletter', 'boolean').label('Newsletter'),
+            nga.field('segments', 'template').template(entry => `${entry.values.groups}`),
+        ]);
     customer.editionView()
         .title('<img src="{{ entry.values.avatar }}" width="50" style="vertical-align: text-bottom"/> {{ entry.values.first_name }} {{ entry.values.last_name }}\'s details')
         .fields([
