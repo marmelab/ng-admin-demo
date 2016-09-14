@@ -9,7 +9,7 @@ import {
 
 var restServer = new FakeRest.Server();
 restServer.toggleLogging();
-restServer.init(data);
+restServer.init(require('./data.js'));
 
 FakeXMLHttpRequest.useFilters = true;
 FakeXMLHttpRequest.addFilter(function (method, url) {
