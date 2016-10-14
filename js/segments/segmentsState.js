@@ -3,7 +3,7 @@ import segments from './segments';
 
 export default function ($stateProvider) {
     $stateProvider.state('segments', {
-        parent: 'main',
+        parent: 'ng-admin',
         url: '/segments',
         params: { },
         controller: ['$scope', ($scope) => {
