@@ -10,7 +10,7 @@ module.exports = {
     output: {
         path: __dirname + "/docs",
         filename: "main.js",
-        publicPath: "/"
+        publicPath: "./"
     },
     module: {
         loaders: [

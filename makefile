@@ -3,8 +3,11 @@
 install:
 	@npm install
 
-build:
+build: copy-login
 	@./node_modules/.bin/webpack  --progress --colors --devtool source-map -p
+
+copy-login:
+	@cp login.html docs/
 
 run:
 	@echo "**************************************************"
