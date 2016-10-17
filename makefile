@@ -4,7 +4,7 @@ install:
 	@npm install
 
 build:
-	@./node_modules/.bin/webpack  --progress --colors --devtool source-map
+	@./node_modules/.bin/webpack  --progress --colors --devtool source-map -p
 
 run:
 	@echo "**************************************************"

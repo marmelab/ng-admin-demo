@@ -12,5 +12,5 @@ db.commands = require('./commands')(db, chance);
 db.reviews = require('./reviews')(db, chance);
 require('./finalize')(db, chance);
 
-fs.writeFileSync(__dirname + '/../data.js', 'var data = ' + JSON.stringify(db));
+fs.writeFileSync(__dirname + '/../js/data.js', 'module.exports = ' + JSON.stringify(db));
 console.log('data.js file updated');
