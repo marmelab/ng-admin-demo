@@ -1,6 +1,6 @@
 var fs = require('fs');
 var Chance = require('chance');
-require('babel/register')({ ignore: '/node_modules\/' });
+require('babel-core/register')({ ignore: '/node_modules\/' });
 
 var chance = new Chance();
 

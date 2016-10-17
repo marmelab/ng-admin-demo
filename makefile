@@ -3,14 +3,10 @@
 install:
 	@npm install
 
-build: copy-ng-admin
+build:
 	@./node_modules/.bin/webpack  --progress --colors --devtool source-map
 
-copy-ng-admin:
-	@cp ./node_modules/ng-admin/build/ng-admin.min.js build/
-	@cp ./node_modules/ng-admin/build/ng-admin.min.js.map build/
-
-run: copy-ng-admin
+run:
 	@echo "**************************************************"
 	@echo "* open http://localhost:8080/webpack-dev-server/ *"
 	@echo "**************************************************"

@@ -1,7 +1,10 @@
-// require('ng-admin'); removed here and added back as a <script> tag to hep debugging - WebPack doesn't properly handle sourcemaps of dependencies yet
+var angular = require('angular');
+
 require('./api');
 
-var myApp = angular.module('myApp', ['ng-admin']);
+var myApp = angular.module('myApp', [
+    require('ng-admin'),
+]);
 
 // custom API flavor
 var apiFlavor = require('./api_flavor');

@@ -6,11 +6,11 @@ export default function (nga, admin) {
             .active(path => path.indexOf('/customers') === 0) // active() is the function that determines if the menu is active
             .addChild(nga.menu()
                 .title('Leads')
-                .link('/customers/list?search={"has_ordered":"false"}') // use the same entity list for several menu items
+                .link('/customers/list?search={"has_ordered":false}') // use the same entity list for several menu items
                 .icon('<span class="fa fa-user-times fa-fw"></span>')) // no active() function => will never appear active
             .addChild(nga.menu()
                 .title('Customers')
-                .link('/customers/list?search={"has_ordered":"true"}') // use the same entity list for several menu items
+                .link('/customers/list?search={"has_ordered":true}') // use the same entity list for several menu items
                 .icon('<span class="fa fa-user fa-fw"></span>'))
             .addChild(nga.menu()
                 .title('Segments')
