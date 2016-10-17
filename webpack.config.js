@@ -8,7 +8,7 @@ module.exports = {
         './css/main.scss',
     ],
     output: {
-        path: __dirname + "/build",
+        path: __dirname + "/docs",
         filename: "main.js",
         publicPath: "/"
     },
