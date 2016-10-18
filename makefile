@@ -9,6 +9,7 @@ build: copy-login
 copy-login:
 	@cp login.html docs/
 	@cp css/login.css docs/
+	@cp images/user.png docs/
 
 run:
 	@echo "**************************************************"
