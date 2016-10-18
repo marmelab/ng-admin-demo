@@ -4,7 +4,7 @@ install:
 	@npm install
 
 build: copy-login
-	@./node_modules/.bin/webpack  --progress --colors --devtool source-map -p
+	@./node_modules/.bin/webpack  --progress --colors --devtool source-map
 
 copy-login:
 	@cp login.html docs/

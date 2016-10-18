@@ -1,13 +1,29 @@
-<!DOCTYPE html><html><head><link href="main.css?1c4f9ae650f55c2e2385" rel="stylesheet"></head><head><title>Posters Galore Administration</title><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1"><body ng-app=myApp><div ui-view=ng-admin></div><script type=text/javascript>var username = window.localStorage.getItem('posters_galore_login');
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Posters Galore Administration</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="main.css?f87b1a5aad94b61c6348" rel="stylesheet"></head>
+    <body ng-app="myApp">
+        <div ui-view="ng-admin"></div>
+        <script type="text/javascript">
+        var username = window.localStorage.getItem('posters_galore_login');
         if (!username) {
             window.location.href = "./login.html";
         }
         function logout() {
             window.localStorage.removeItem('posters_galore_login');
             window.location.href = "./login.html";
-        }</script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        }
+        </script>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
           })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
           ga('create', 'UA-46201426-1', 'auto');
-          ga('send', 'pageview');</script><script type="text/javascript" src="main.js?1c4f9ae650f55c2e2385"></script>
+          ga('send', 'pageview');
+        </script>
+    <script type="text/javascript" src="main.js?f87b1a5aad94b61c6348"></script></body>
+</html>
