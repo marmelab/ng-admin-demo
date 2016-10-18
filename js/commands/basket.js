@@ -6,7 +6,7 @@ function basket(Restangular, $q) {
         scope: {
         	command: '='
         },
-        controller: function($scope) {
+        controller: ['$scope', function($scope) {
             $scope.productsById = {};
         	let productIds = $scope.command.basket
                 .map(item => item.product_id)
@@ -36,7 +36,7 @@ function basket(Restangular, $q) {
                 let total = command.total_ex_taxes + command.delivery_fees + command.taxes;
                 command.total = parseFloat(total.toFixed(2));
             }, true);
-        },
+        }],
         template: `
 <table class="grid table table-condensed img-thumbnail items">
 <thead>

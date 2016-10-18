@@ -11,7 +11,7 @@ function dashboardSummary(Restangular) {
     return {
         restrict: 'E',
         scope: {},
-        controller: function($scope) {
+        controller: ['$scope', function($scope) {
             $scope.stats = {};
             $scope.has_seen_alert = has_seen_alert;
             $scope.dismissAlert = () => {
@@ -41,7 +41,7 @@ function dashboardSummary(Restangular) {
                 .then(reviews => {
                     $scope.stats.reviews = reviews.data.reduce(nb => ++nb, 0)
                 });
-        },
+        }],
         template: dashboardSummaryTemplate
     };
 }
