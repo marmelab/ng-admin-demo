@@ -2,7 +2,7 @@
 
 This is a demo of the [ng-admin](https://github.com/marmelab/ng-admin) module for Angular.js. It creates a working administration for a fake poster shop named **Posters Galore**. You can test it online at [http://marmelab.com/ng-admin-demo](http://marmelab.com/ng-admin-demo).
 
-[![Posters Galore Administration](http://marmelab.com/ng-admin-demo/images/screenshot.png)](http://marmelab.com/ng-admin-demo)
+[![Posters Galore Administration](https://cdn.rawgit.com/marmelab/ng-admin-demo/master/images/screenshot.png)](http://marmelab.com/ng-admin-demo)
 
 ng-admin usually requires a REST server to provide data. In this demo however, the REST server is simulated by the browser (using [FakeRest](https://github.com/marmelab/FakeRest)). You can see the source data in [data.js](https://github.com/marmelab/ng-admin-demo/blob/master/data.js).
 
