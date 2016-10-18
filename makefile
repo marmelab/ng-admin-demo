@@ -3,10 +3,10 @@
 install:
 	@npm install
 
-build: copy-login
+build: copy-assets
 	@./node_modules/.bin/webpack  --progress --colors --devtool source-map -p
 
-copy-login:
+copy-assets:
 	@cp login.html docs/
 	@cp css/login.css docs/
 	@cp images/user.png docs/
