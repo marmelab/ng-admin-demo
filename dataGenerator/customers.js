@@ -17,7 +17,7 @@ export default function(db, chance) {
             address: has_ordered ? chance.address() : null,
             zipcode: has_ordered ? chance.zip() : null,
             city: has_ordered ? chance.city() : null,
-            avatar: 'http://robohash.org/' + md5(email) + '.png',
+            avatar: 'https://robohash.org/' + md5(email) + '.png',
             birthday: has_ordered ? chance.birthday() : null,
             first_seen: first_seen,
             last_seen: last_seen,
