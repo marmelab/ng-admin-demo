@@ -26,7 +26,7 @@
     "html-webpack-plugin": "^2.22.0",
     "md5": "2.0.0",
     "moment": "2.10.6",
-    "ng-admin": "1.0.0-beta2",
+    "ng-admin": "1.0.0-RC2",
     "node-sass": "^3.9.3",
     "sass-loader": "2.0.1",
     "sinon": "v2.0.0-pre.2",
