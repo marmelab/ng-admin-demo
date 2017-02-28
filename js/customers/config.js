@@ -19,7 +19,8 @@ export default function (nga, admin) {
             nga.field('last_seen', 'datetime')
                 .map(fromNow)
                 .cssClasses('hidden-xs'),
-            nga.field('nb_commands', 'number')
+            nga.field('nb_commands', 'template')
+                .template('<a href="./commands/list?search={"customer_id":{{entry.values.id}}}>number</a>')
                 .label('Commands')
                 .cssClasses(entry => entry && entry.values.nb_commands ? 'hidden-xs' : 'transparent hidden-xs'),
             nga.field('total_spent', 'amount')
